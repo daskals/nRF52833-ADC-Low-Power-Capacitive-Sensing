@@ -1,4 +1,4 @@
-PROJECT_NAME     := adc_cap_pca10100
+PROJECT_NAME     := saadc_pca10100
 TARGETS          := nrf52833_xxaa
 OUTPUT_DIRECTORY := _build
 
@@ -6,7 +6,7 @@ SDK_ROOT := ../../../../../..
 PROJ_DIR := ../../..
 
 $(OUTPUT_DIRECTORY)/nrf52833_xxaa.out: \
-  LINKER_SCRIPT  := adc_cap_gcc_nrf52.ld
+  LINKER_SCRIPT  := saadc_gcc_nrf52.ld
 
 # Source files common to all targets
 SRC_FILES += \

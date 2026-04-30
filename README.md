@@ -103,7 +103,7 @@ The internal pull-up resistor (R\_PULLUP ≈ 13 kΩ) on IN\_PIN is the only char
 
 > 📁 **To run this project:**
 > 1. Place the entire folder under: `nRF5_SDK_17.1.0_ddde560\examples\peripheral\`
-> 2. Open the project file `adc_cap_pca10100.emProject` located in: `pca10100\blank\ses\`
+> 2. Open the project file `saadc_pca10100.emProject` located in: `pca10100\blank\ses\`
 
 ---
 
