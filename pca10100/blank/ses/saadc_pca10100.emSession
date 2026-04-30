@@ -62,9 +62,9 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="405" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="132" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="25" y="1558" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="1520" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="405" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../saadc_low_power_rtc_Spyros_opt/main.c" selected="0" top="390" codecName=""/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="71" y="250" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="239" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="1558" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="1520" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="405" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../saadc_low_power_rtc_Spyros_opt/main.c" selected="0" top="390" codecName="Default"/>
  </Files>
  <ARMCrossStudioWindow activeProject="saadc_pca10100_Spiros" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="" debugSearchPath="" autoConnectCapabilities="3711"/>
 </session>

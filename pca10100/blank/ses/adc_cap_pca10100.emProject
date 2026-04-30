@@ -1,6 +1,6 @@
 <!DOCTYPE CrossStudio_Project_File>
-<solution Name="saadc_pca10100_Spiros" target="8" version="2">
-  <project Name="saadc_pca10100_Spiros">
+<solution Name="adc_cap_pca10100" target="8" version="2">
+  <project Name="adc_cap_pca10100">
     <configuration
       Name="Common"
       arm_architecture="v7EM"
