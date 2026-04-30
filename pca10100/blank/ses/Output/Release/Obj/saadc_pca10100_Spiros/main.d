@@ -1,5 +1,5 @@
 Output/Release/Obj/saadc_pca10100_Spiros/main.o: \
- C\:\nRF5_SDK_17.1.0_ddde560\examples\peripheral\nRF52833-SAADC-Multiplexed-Low-Power-Sampling\main.c \
+ C\:\nRF5_SDK_17.1.0_ddde560\examples\peripheral\nRF52833-ADC-Low-Power-Capacitive-Sensing\main.c \
  C\:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.42a/include/stdbool.h \
  C\:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.42a/include/stdint.h \
  C\:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.42a/include/stdio.h \
@@ -63,7 +63,6 @@ Output/Release/Obj/saadc_pca10100_Spiros/main.o: \
  ../../../../../../integration/nrfx/legacy/nrf_drv_rtc.h \
  ../../../../../../modules/nrfx/drivers/include/nrfx_rtc.h \
  ../../../../../../modules/nrfx/hal/nrf_rtc.h \
- ../../../../../../components/libraries/delay/nrf_delay.h \
  ../../../../../../components/libraries/log/nrf_log.h \
  ../../../../../../components/libraries/util/sdk_common.h \
  ../../../../../../components/libraries/util/sdk_os.h \
