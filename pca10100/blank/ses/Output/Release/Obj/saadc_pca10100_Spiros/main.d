@@ -5,6 +5,7 @@ Output/Release/Obj/saadc_pca10100_Spiros/main.o: \
  C\:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.42a/include/stdio.h \
  C\:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.42a/include/__crossworks.h \
  C\:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.42a/include/string.h \
+ C\:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.42a/include/math.h \
  ../../../../../../modules/nrfx/mdk/nrf.h \
  ../../../../../../modules/nrfx/mdk/nrf52833.h \
  ../../../../../../components/toolchain/cmsis/include/core_cm4.h \
@@ -53,16 +54,14 @@ Output/Release/Obj/saadc_pca10100_Spiros/main.o: \
  ../../../../../../components/libraries/pwr_mgmt/nrf_pwr_mgmt.h \
  ../../../../../../components/libraries/experimental_section_vars/nrf_section_iter.h \
  ../../../../../../components/libraries/experimental_section_vars/nrf_section.h \
- ../../../../../../integration/nrfx/legacy/nrf_drv_power.h \
- ../../../../../../modules/nrfx/drivers/include/nrfx_power.h \
- ../../../../../../modules/nrfx/hal/nrf_power.h \
- ../../../../../../modules/nrfx/drivers/include/nrfx_power_clock.h \
  ../../../../../../integration/nrfx/legacy/nrf_drv_clock.h \
  ../../../../../../modules/nrfx/drivers/include/nrfx_clock.h \
  ../../../../../../modules/nrfx/hal/nrf_clock.h \
+ ../../../../../../modules/nrfx/drivers/include/nrfx_power_clock.h \
  ../../../../../../integration/nrfx/legacy/nrf_drv_rtc.h \
  ../../../../../../modules/nrfx/drivers/include/nrfx_rtc.h \
  ../../../../../../modules/nrfx/hal/nrf_rtc.h \
+ ../../../../../../components/libraries/delay/nrf_delay.h \
  ../../../../../../components/libraries/log/nrf_log.h \
  ../../../../../../components/libraries/util/sdk_common.h \
  ../../../../../../components/libraries/util/sdk_os.h \

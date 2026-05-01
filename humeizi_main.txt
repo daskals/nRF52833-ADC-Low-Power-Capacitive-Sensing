@@ -8,7 +8,7 @@
  * Hardware connection: one end of sensor -> P0.02 (AIN0), the other end -> P0.03 (AIN1)
  * 
  * Calibration status:  Using 10pF/100pF standard capacitors
- *   - R_PULLUP = 13.0 kO (nRF52 typical value)
+ *   - R_PULLUP = 13.0 kΩ (nRF52 typical value)
  * 
  * Output: print capacitance value and rain level (integer) every 2 seconds
  * 
@@ -24,7 +24,6 @@
  *   - 2025-03-25: Further stability improvements: increased charging time to 1ms, oversampling to 10,
  *                 added 15-time repeated measurement with outlier removal before moving average.
  *   - 2025-03-26: Extended charging time to 1ms, increased discharge settling, more outlier rejection.
- *   - 2025-05-01: Fixed LFCLK startup wait, added extra debugging logs, improved calibration timeout.
  */
 
 // -----------------------------------------------------------------------------
@@ -68,7 +67,7 @@
 // -----------------------------------------------------------------------------
 #define IN_STRAY_CAP_TO_GND     99.0f                  // Proportionality factor K (calibrated with 10pF/100pF two-point)
 #define C_STRAY                 41.0f                   // System stray capacitance (pF)
-#define R_PULLUP                13.0f                   // Internal pull-up resistor (kO), nRF52 typical
+#define R_PULLUP                13.0f                   // Internal pull-up resistor (kΩ), nRF52 typical
 #define MAX_ADC_VALUE           4095                    // 12-bit ADC maximum value
 
 // -----------------------------------------------------------------------------
@@ -118,8 +117,6 @@ static struct {
 static const nrf_drv_rtc_t rtc = NRF_DRV_RTC_INSTANCE(2);
 static uint32_t rtc_ticks = RTC_US_TO_TICKS(RAIN_MEASUREMENT_INTERVAL_SEC * 1000000UL, RTC_FREQUENCY);
 static uint32_t measurement_counter = 0;
-static volatile bool g_do_measurement = false;  // set by RTC ISR, consumed in main loop
-static volatile bool g_saadc_cal_done = false;  // set by saadc_callback on CALIBRATEDONE
 
 // -----------------------------------------------------------------------------
 // Function declarations
@@ -254,7 +251,7 @@ static float measure_capacitance(void)
 static rain_intensity_t classify_rain_intensity(float capacitance)
 {
     // Thresholds need to be calibrated according to your sensor characteristics (values below are examples)
-    if (capacitance < 150.0f)        return RAIN_NONE;
+    if (capacitance < 100.0f)        return RAIN_NONE;
     else if (capacitance < 250.0f) return RAIN_LIGHT;
     else if (capacitance < 500.0f) return RAIN_MODERATE;
     else                          return RAIN_HEAVY;
@@ -286,9 +283,7 @@ void saadc_callback(nrf_drv_saadc_evt_t const *p_event)
 {
     if (p_event->type == NRF_DRV_SAADC_EVT_CALIBRATEDONE)
     {
-        g_saadc_cal_done = true;
-        NRF_LOG_INFO("    SAADC hardware offset calibration complete.");
-        NRF_LOG_FLUSH();
+        NRF_LOG_INFO("SAADC calibration complete!");
     }
 }
 
@@ -306,11 +301,9 @@ static void saadc_init(void)
     };
 
     NRF_LOG_INFO("  - Initializing SAADC driver...");
-    NRF_LOG_FLUSH();
     err_code = nrf_drv_saadc_init(&saadc_config, saadc_callback);
     APP_ERROR_CHECK(err_code);
     NRF_LOG_INFO("    SAADC driver initialized.");
-    NRF_LOG_FLUSH();
 
     nrf_saadc_channel_config_t channel_config = {
         .resistor_p = NRF_SAADC_RESISTOR_DISABLED,
@@ -324,51 +317,41 @@ static void saadc_init(void)
     };
 
     NRF_LOG_INFO("  - Configuring channel 0 (AIN0)...");
-    NRF_LOG_FLUSH();
     channel_config.pin_p = NRF_SAADC_INPUT_AIN0;
     err_code = nrf_drv_saadc_channel_init(RAIN_SENSOR_ADC_CHANNEL_OUT, &channel_config);
     APP_ERROR_CHECK(err_code);
     NRF_LOG_INFO("    Channel 0 ready.");
-    NRF_LOG_FLUSH();
 
     NRF_LOG_INFO("  - Configuring channel 1 (AIN1)...");
-    NRF_LOG_FLUSH();
     channel_config.pin_p = NRF_SAADC_INPUT_AIN1;
     err_code = nrf_drv_saadc_channel_init(RAIN_SENSOR_ADC_CHANNEL_IN, &channel_config);
     APP_ERROR_CHECK(err_code);
     NRF_LOG_INFO("    Channel 1 ready.");
-    NRF_LOG_FLUSH();
 
-    NRF_LOG_INFO("  - Starting SAADC hardware offset calibration...");
-    NRF_LOG_INFO("    (Trims internal ADC offset; completes before first measurement)");
-    NRF_LOG_FLUSH();
-    g_saadc_cal_done = false;
-    APP_ERROR_CHECK(nrf_drv_saadc_calibrate_offset());
-    while (!g_saadc_cal_done);
-    NRF_LOG_INFO("    SAADC ready.");
-    NRF_LOG_FLUSH();
+    NRF_LOG_INFO("  - Performing SAADC offset calibration...");
+    // Add timeout protection to avoid infinite deadlock
+    uint32_t timeout = 100000; // approx 100ms (rough loop)
+    while (nrf_drv_saadc_calibrate_offset() != NRF_SUCCESS)
+    {
+        if (--timeout == 0)
+        {
+            NRF_LOG_ERROR("SAADC calibration failed to start after multiple attempts!");
+            break;
+        }
+    }
+    NRF_LOG_INFO("    SAADC calibration initiated (may complete in background).");
 }
 
 // -----------------------------------------------------------------------------
-// Low frequency clock configuration (with wait for ready)
+// Low frequency clock configuration
 // -----------------------------------------------------------------------------
 static void lfclk_config(void)
 {
     ret_code_t err_code = nrf_drv_clock_init();
     APP_ERROR_CHECK(err_code);
     NRF_LOG_INFO("  - Requesting LFCLK...");
-    NRF_LOG_FLUSH();
     nrf_drv_clock_lfclk_request(NULL);
-
-    // Wait for LFCLK to be started
-    NRF_LOG_INFO("  - Waiting for LFCLK to become stable...");
-    NRF_LOG_FLUSH();
-    while (!nrf_drv_clock_lfclk_is_running())
-    {
-        nrf_delay_ms(1);
-    }
-    NRF_LOG_INFO("    LFCLK is running.");
-    NRF_LOG_FLUSH();
+    NRF_LOG_INFO("    LFCLK requested.");
 }
 
 // -----------------------------------------------------------------------------
@@ -376,18 +359,36 @@ static void lfclk_config(void)
 // -----------------------------------------------------------------------------
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
 {
-    if (int_type != NRF_DRV_RTC_INT_COMPARE0) return;
+    if (int_type == NRF_DRV_RTC_INT_COMPARE0)
+    {
+        measurement_counter++;
 
-    // Set flag only — measurement runs in main loop (nrf_delay + SAADC cannot run in ISR)
-    g_do_measurement = true;
+        // Measure raw capacitance (enhanced stability inside function)
+        float raw_cap = measure_capacitance();
 
-    ret_code_t err_code = nrf_drv_rtc_cc_set(&rtc, 0, rtc_ticks, true);
-    APP_ERROR_CHECK(err_code);
-    nrf_drv_rtc_counter_clear(&rtc);
+        // Moving average filter
+        if (raw_cap > 0.1f) {
+            g_cap_sum -= g_cap_buffer[g_cap_idx];
+            g_cap_buffer[g_cap_idx] = raw_cap;
+            g_cap_sum += raw_cap;
+            g_cap_idx = (g_cap_idx + 1) % FILTER_SAMPLES;
+            if (g_cap_cnt < FILTER_SAMPLES) g_cap_cnt++;
+            
+            float avg_cap = g_cap_sum / g_cap_cnt;
+            
+            // Process rain data
+            process_rain_measurement(avg_cap);
+        }
 
-#if LED_FUNCTIONALITY_ENABLED
-    LEDS_INVERT(BSP_LED_0_MASK);
-#endif
+        // Re-set RTC compare value
+        ret_code_t err_code = nrf_drv_rtc_cc_set(&rtc, 0, rtc_ticks, true);
+        APP_ERROR_CHECK(err_code);
+        nrf_drv_rtc_counter_clear(&rtc);
+
+        #if LED_FUNCTIONALITY_ENABLED
+            LEDS_INVERT(BSP_LED_0_MASK);
+        #endif
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -400,24 +401,18 @@ static void rtc_config(void)
         .prescaler = RTC_FREQ_TO_PRESCALER(RTC_FREQUENCY)
     };
     NRF_LOG_INFO("  - Initializing RTC...");
-    NRF_LOG_FLUSH();
     err_code = nrf_drv_rtc_init(&rtc, &rtc_config, rtc_handler);
     APP_ERROR_CHECK(err_code);
     NRF_LOG_INFO("    RTC initialized.");
-    NRF_LOG_FLUSH();
 
     NRF_LOG_INFO("  - Setting RTC compare value...");
-    NRF_LOG_FLUSH();
     err_code = nrf_drv_rtc_cc_set(&rtc, 0, rtc_ticks, true);
     APP_ERROR_CHECK(err_code);
     NRF_LOG_INFO("    Compare value set.");
-    NRF_LOG_FLUSH();
 
     NRF_LOG_INFO("  - Enabling RTC...");
-    NRF_LOG_FLUSH();
     nrf_drv_rtc_enable(&rtc);
     NRF_LOG_INFO("    RTC enabled. Measurement interval: %d s", RAIN_MEASUREMENT_INTERVAL_SEC);
-    NRF_LOG_FLUSH();
 }
 
 // -----------------------------------------------------------------------------
@@ -443,7 +438,6 @@ static void init_log(void)
     APP_ERROR_CHECK(err_code);
     NRF_LOG_DEFAULT_BACKENDS_INIT();
     NRF_LOG_INFO("Rainfall Sensor System Initialized (Optimized, Integer Output)");
-    NRF_LOG_FLUSH();
 }
 
 // =============================================================================
@@ -516,7 +510,6 @@ static float collect_measurements(float cap_value, const char* cap_name, int num
     for (int i = 0; i < num_measurements; i++) {
         measurements[i] = measure_small_cap_adc();
         NRF_LOG_INFO("  Measurement %2d: ADC = %4d", i+1, measurements[i]);
-        NRF_LOG_FLUSH();
         nrf_delay_ms(100); // small delay between measurements
     }
 
@@ -654,39 +647,13 @@ int main(void)
     perform_calibration();
 #else
     // Normal measurement mode
-    NRF_LOG_INFO("===== Step 5: Power management init =====");
-    ret_code_t err_code = nrf_pwr_mgmt_init();
-    APP_ERROR_CHECK(err_code);
-    NRF_LOG_FLUSH();
-
-    NRF_LOG_INFO("===== Step 6: RTC config =====");
+    NRF_LOG_INFO("===== Step 5: RTC config =====");
     rtc_config();
     NRF_LOG_INFO("===== System ready. Output: integer capacitance and level (0=NONE,1=LIGHT,2=MODERATE,3=HEAVY) =====");
     NRF_LOG_FLUSH();
 
     while (1)
     {
-        if (g_do_measurement)
-        {
-            g_do_measurement = false;
-            measurement_counter++;
-
-            float raw_cap = measure_capacitance();
-
-            if (raw_cap > 0.1f)
-            {
-                g_cap_sum -= g_cap_buffer[g_cap_idx];
-                g_cap_buffer[g_cap_idx] = raw_cap;
-                g_cap_sum += raw_cap;
-                g_cap_idx = (g_cap_idx + 1) % FILTER_SAMPLES;
-                if (g_cap_cnt < FILTER_SAMPLES) g_cap_cnt++;
-
-                float avg_cap = g_cap_sum / g_cap_cnt;
-                process_rain_measurement(avg_cap);
-            }
-            NRF_LOG_FLUSH();
-        }
-
         NRF_LOG_PROCESS();
         nrf_pwr_mgmt_run();
     }
