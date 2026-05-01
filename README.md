@@ -1,5 +1,7 @@
 # 🌧️ nRF52833 — Low-Cost Capacitive Rain Sensor Using MCU Built-in ADC
 
+![Board](Images/board%201.jpeg)
+
 This repository contains the firmware and supporting material for a low-cost, low-power capacitive rain sensor designed for agricultural IoT applications. Capacitance is measured directly using the built-in 12-bit SAADC of the nRF52833 — **no external CDC or CFC chip required**.
 
 > 📄 **Student Report:** [A Low-Cost Capacitive Rain Sensor for Agriculture Using Only MCU Built-in ADC](Report/SONG%20Humeizi.pdf)  
@@ -104,21 +106,25 @@ The internal pull-up resistor (R\_PULLUP ≈ 13 kΩ) on IN\_PIN is the only char
 > 📁 **To run this project:**
 > 1. Place the entire folder under: `nRF5_SDK_17.1.0_ddde560\examples\peripheral\`
 > 2. Open the project file `saadc_pca10100.emProject` located in: `pca10100\blank\ses\`
+> 3. Both `main.c` and `rain_sensor.c` are already registered in the project — no manual steps needed.
 
 ---
 
 ## ⚙️ Configuration
 
-Key parameters in [main.c](main.c):
+Key parameters split across [main.c](main.c) and [rain_sensor.h](rain_sensor.h):
 
-| Macro                               | Default                          | Description                                    |
-|-------------------------------------|----------------------------------|------------------------------------------------|
-| `SAADC_SAMPLE_INTERVAL_SEC`         | `1`                              | RTC sampling interval (seconds)                |
-| `SAADC_RESOLUTION_BITS`             | `12`                             | ADC resolution                                 |
-| `SAADC_OVERSAMPLE`                  | `NRF_SAADC_OVERSAMPLE_DISABLED`  | Hardware oversampling (software used instead)  |
-| `SAADC_BURST_MODE`                  | `0`                              | Burst mode toggle                              |
-| `CALIBRATION_FUNCTIONALITY_ENABLED` | `0`                              | Set to `1` to enable two-point calibration     |
-| `LED_FUNCTIONALITY_ENABLED`         | `1`                              | Toggle LED indicators                          |
+| Macro | File | Default | Description |
+|-------|------|---------|-------------|
+| `RAIN_MEASUREMENT_INTERVAL_SEC` | `main.c` | `2` | RTC period between measurements (seconds) |
+| `LED_FUNCTIONALITY_ENABLED` | `main.c` | `1` | Toggle LED on each measurement |
+| `CALIBRATION_FUNCTIONALITY_ENABLED` | `rain_sensor.h` | `0` | Set to `1` to run two-point calibration |
+| `USE_LEVEL_STRING` | `rain_sensor.h` | `0` | `0` = numeric level, `1` = text string |
+| `IN_STRAY_CAP_TO_GND` | `rain_sensor.c` | `99.0` | Proportionality factor K (from calibration) |
+| `C_STRAY` | `rain_sensor.c` | `41.0` | System stray capacitance in pF (from calibration) |
+| `ADC_OVERSAMPLE` | `rain_sensor.c` | `10` | ADC reads averaged per charge cycle |
+| `CHARGE_DELAY_US` | `rain_sensor.c` | `1000` | Capacitor charge time (us) |
+| `MEASURE_REPEAT` | `rain_sensor.c` | `15` | Charge cycles per measurement (outlier rejection) |
 
 ---
 
@@ -156,10 +162,13 @@ Key parameters in [main.c](main.c):
 
 ```
 .
-├── main.c                  # Main firmware (RTC + SAADC capacitance sensing)
-├── main_polling.c.txt      # Polling-based SAADC reference example
+├── main.c                  # System init and main loop (clock, RTC, power management)
+├── rain_sensor.c           # Sensor logic (SAADC, measurement, filtering, calibration)
+├── rain_sensor.h           # Public sensor API and configuration macros
+├── Images/
+│   └── board 1.jpeg        # Hardware photo
 ├── Report/
-│   └── SONG Humeizi.pdf   # Full Honours report
+│   └── SONG Humeizi.pdf    # Full Honours report
 ├── pca10100/
 │   └── blank/ses/          # SEGGER Embedded Studio project files
 └── plots/                  # Power profiler measurement plots

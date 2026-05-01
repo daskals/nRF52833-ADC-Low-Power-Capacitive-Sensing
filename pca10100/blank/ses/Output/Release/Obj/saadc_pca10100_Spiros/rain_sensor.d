@@ -1,9 +1,8 @@
-Output/Release/Obj/saadc_pca10100_Spiros/main.o: \
- C\:\nRF5_SDK_17.1.0_ddde560\examples\peripheral\nRF52833-ADC-Low-Power-Capacitive-Sensing\main.c \
+Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o: \
+ C\:\nRF5_SDK_17.1.0_ddde560\examples\peripheral\nRF52833-ADC-Low-Power-Capacitive-Sensing\rain_sensor.c \
+ C\:\nRF5_SDK_17.1.0_ddde560\examples\peripheral\nRF52833-ADC-Low-Power-Capacitive-Sensing\rain_sensor.h \
  C\:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.42a/include/stdbool.h \
  C\:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.42a/include/stdint.h \
- C\:\nRF5_SDK_17.1.0_ddde560\examples\peripheral\nRF52833-ADC-Low-Power-Capacitive-Sensing\rain_sensor.h \
- ../../../../../../components/boards/boards.h \
  ../../../../../../modules/nrfx/hal/nrf_gpio.h \
  ../../../../../../modules/nrfx/nrfx.h \
  ../../../../../../integration/nrfx/nrfx_config.h ../config/sdk_config.h \
@@ -45,19 +44,14 @@ Output/Release/Obj/saadc_pca10100_Spiros/main.o: \
  ../../../../../../components/libraries/util/sdk_errors.h \
  ../../../../../../components/libraries/util/sdk_resources.h \
  ../../../../../../modules/nrfx/drivers/nrfx_errors.h \
- ../../../../../../components/boards/pca10100.h \
+ ../../../../../../integration/nrfx/legacy/nrf_drv_saadc.h \
+ ../../../../../../modules/nrfx/drivers/include/nrfx_saadc.h \
+ ../../../../../../modules/nrfx/hal/nrf_saadc.h \
  ../../../../../../components/libraries/util/app_error.h \
+ ../../../../../../components/libraries/delay/nrf_delay.h \
  ../../../../../../components/libraries/pwr_mgmt/nrf_pwr_mgmt.h \
  ../../../../../../components/libraries/experimental_section_vars/nrf_section_iter.h \
  ../../../../../../components/libraries/experimental_section_vars/nrf_section.h \
- ../../../../../../integration/nrfx/legacy/nrf_drv_clock.h \
- ../../../../../../modules/nrfx/drivers/include/nrfx_clock.h \
- ../../../../../../modules/nrfx/hal/nrf_clock.h \
- ../../../../../../modules/nrfx/drivers/include/nrfx_power_clock.h \
- ../../../../../../integration/nrfx/legacy/nrf_drv_rtc.h \
- ../../../../../../modules/nrfx/drivers/include/nrfx_rtc.h \
- ../../../../../../modules/nrfx/hal/nrf_rtc.h \
- ../../../../../../components/libraries/delay/nrf_delay.h \
  ../../../../../../components/libraries/log/nrf_log.h \
  ../../../../../../components/libraries/util/sdk_common.h \
  C\:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.42a/include/string.h \
@@ -75,5 +69,4 @@ Output/Release/Obj/saadc_pca10100_Spiros/main.o: \
  ../../../../../../components/libraries/log/nrf_log_backend_interface.h \
  ../../../../../../components/libraries/memobj/nrf_memobj.h \
  C\:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.42a/include/stdlib.h \
- ../../../../../../components/libraries/balloc/nrf_balloc.h \
- ../../../../../../components/libraries/log/nrf_log_default_backends.h
+ ../../../../../../components/libraries/balloc/nrf_balloc.h

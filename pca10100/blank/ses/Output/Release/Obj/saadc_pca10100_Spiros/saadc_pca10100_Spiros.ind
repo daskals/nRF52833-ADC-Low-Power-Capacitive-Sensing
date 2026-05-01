@@ -33,6 +33,7 @@
 "Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uarte.o"
 "Output/Release/Obj/saadc_pca10100_Spiros/nrfx_rtc.o"
 "Output/Release/Obj/saadc_pca10100_Spiros/main.o"
+"Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o"
 "Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o"
 "Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT_Syscalls_SES.o"
 "Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT_printf.o"
