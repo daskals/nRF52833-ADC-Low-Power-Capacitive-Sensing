@@ -1,30 +1,35 @@
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
 /**
  * @file main.c
- * @brief Precision Agriculture Capacitive Rain Sensor (based on nRF52832 SAADC)
- * 
- * Measurement principle: Arduino Capacitance Meter (470uF to 18pF) method
- * Hardware connection: one end of sensor -> P0.02 (AIN0), the other end -> P0.03 (AIN1)
- * 
- * Calibration status:  Using 10pF/100pF standard capacitors
- *   - R_PULLUP = 13.0 kO (nRF52 typical value)
- * 
- * Output: print capacitance value and rain level (integer) every 2 seconds
- * 
+ * @brief Precision Agriculture Capacitive Rain Sensor (nRF52833 SAADC)
+ *
+ * Measurement principle: Arduino Capacitance Meter small-capacitance method.
+ * Reference: https://wordpress.codewrite.co.uk/pic/2014/01/21/cap-meter-with-arduino-uno/index.html
+ *
+ * Hardware connection:
+ *   OUT_PIN = P0.02 (AIN0) — driven high to charge sensor capacitor
+ *   IN_PIN  = P0.03 (AIN1) — ADC sense pin, charged via internal pull-up (~13 kΩ)
+ *
+ * Calibration: two-point calibration using 10 pF and 100 pF standard capacitors.
+ *   Set CALIBRATION_FUNCTIONALITY_ENABLED = 1 to run calibration mode.
+ *
+ * Output: capacitance value (pF) and rain intensity level every 2 seconds via RTT log.
+ *
+ * Author: Humeizi Song — shmz2025@126.com
+ * Supervisor: Dr. Spyridon Daskalakis
+ * Heriot-Watt University, Edinburgh EH14 4AS, UK
+ *
  * Revision history:
- *   - 2025-02-20: Optimized measurement stability, removed cumulative rainfall, improved response speed
- *   - 2025-02-20: Fixed log output (capacitance rounded, level represented by numbers)
- *   - 2025-03-01: Added calibration mode (switchable via CALIBRATION_FUNCTIONALITY_ENABLED)
- *   - 2025-03-06: Added initialization step logs, enhanced error handling, avoid infinite loop deadlock
- *   - 2025-03-16: Improved calibration mode: longer charging time, increased averaging, outlier removal.
- *   - 2025-03-20: Removed defective large capacitance measurement branch; only small capacitance formula used.
- *   - 2025-03-24: Enhanced measurement stability: increased oversampling, longer stabilization delay,
- *                 larger moving average window, outlier rejection.
- *   - 2025-03-25: Further stability improvements: increased charging time to 1ms, oversampling to 10,
- *                 added 15-time repeated measurement with outlier removal before moving average.
- *   - 2025-03-26: Extended charging time to 1ms, increased discharge settling, more outlier rejection.
- *   - 2025-05-01: Fixed LFCLK startup wait, added extra debugging logs, improved calibration timeout.
+ *   2025-02-20: Initial port from Arduino; basic measurement working.
+ *   2025-03-01: Calibration mode added.
+ *   2025-03-16: Improved calibration: longer charging time, increased averaging, outlier removal.
+ *   2025-03-20: Removed large-capacitance branch; only small capacitance formula used.
+ *   2025-03-24: Enhanced stability: increased oversampling, longer stabilisation delay,
+ *               larger moving average window, outlier rejection.
+ *   2025-03-25: Increased charging time to 1 ms, oversampling to 10,
+ *               added 15-repeat measurement with outlier removal before moving average.
+ *   2025-03-26: Extended charging time to 1 ms, increased discharge settling.
+ *   2025-05-01: Fixed LFCLK startup wait; moved measurement out of ISR; removed
+ *               async calibrate_offset race; added nrf_pwr_mgmt_init.
  */
 
 // -----------------------------------------------------------------------------
@@ -33,8 +38,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
-#include <math.h>
 #include "nrf.h"
 #include "nrf_drv_saadc.h"
 #include "boards.h"
@@ -47,122 +50,99 @@
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
-#include "nrfx_rtc.h"
 
 // -----------------------------------------------------------------------------
-// Mode selection macro (modify this value to switch mode)
+// Mode selection  (0 = measurement mode, 1 = calibration mode)
 // -----------------------------------------------------------------------------
-#define CALIBRATION_FUNCTIONALITY_ENABLED  0   // 0:measurement mode, 1:calibration mode
+#define CALIBRATION_FUNCTIONALITY_ENABLED  0
 
 // -----------------------------------------------------------------------------
-// Hardware pins 
+// Hardware pins
 // -----------------------------------------------------------------------------
-#define RAIN_SENSOR_OUT_PIN     NRF_GPIO_PIN_MAP(0, 2)   // OUT_PIN = AIN0
-#define RAIN_SENSOR_IN_PIN      NRF_GPIO_PIN_MAP(0, 3)   // IN_PIN  = AIN1
+#define RAIN_SENSOR_OUT_PIN          NRF_GPIO_PIN_MAP(0, 2)  // AIN0 — charging output
+#define RAIN_SENSOR_IN_PIN           NRF_GPIO_PIN_MAP(0, 3)  // AIN1 — ADC sense input
 
-#define RAIN_SENSOR_ADC_CHANNEL_IN   1                   // read IN_PIN (AIN1)
-#define RAIN_SENSOR_ADC_CHANNEL_OUT  0                   // read OUT_PIN (AIN0)
-
-// -----------------------------------------------------------------------------
-// Capacitance measurement parameters 
-// -----------------------------------------------------------------------------
-#define IN_STRAY_CAP_TO_GND     99.0f                  // Proportionality factor K (calibrated with 10pF/100pF two-point)
-#define C_STRAY                 41.0f                   // System stray capacitance (pF)
-#define R_PULLUP                13.0f                   // Internal pull-up resistor (kO), nRF52 typical
-#define MAX_ADC_VALUE           4095                    // 12-bit ADC maximum value
+#define RAIN_SENSOR_ADC_CHANNEL_IN   1   // AIN1
+#define RAIN_SENSOR_ADC_CHANNEL_OUT  0   // AIN0
 
 // -----------------------------------------------------------------------------
-// System measurement parameters
+// Capacitance measurement parameters
 // -----------------------------------------------------------------------------
-#define RAIN_MEASUREMENT_INTERVAL_SEC    2              // Measurement interval (seconds) - shortened for faster response
-#define RTC_FREQUENCY                    32             // RTC clock frequency
-#define LED_FUNCTIONALITY_ENABLED        1              // Enable LED indication
-
-// Whether to output level string
-#define USE_LEVEL_STRING                  0
+#define IN_STRAY_CAP_TO_GND     99.0f   // Proportionality factor K  (10 pF / 100 pF two-point calibration)
+#define C_STRAY                 41.0f   // System stray capacitance (pF)
+#define MAX_ADC_VALUE           4095    // 12-bit ADC full scale
 
 // -----------------------------------------------------------------------------
-// Enhanced stability parameters (modified)
+// System / timing parameters
 // -----------------------------------------------------------------------------
-#define ADC_OVERSAMPLE          10      // Number of ADC samples per measurement (was 5)
-#define CHARGE_DELAY_US         1000    // Charge time in microseconds (was 100, then 200; now 1000 for reliability)
-#define MEASURE_REPEAT          15      // Number of repeated measurements for outlier rejection (was 10)
+#define RAIN_MEASUREMENT_INTERVAL_SEC    2    // RTC period between measurements (seconds)
+#define RTC_FREQUENCY                    32   // RTC clock frequency (Hz)
+#define LED_FUNCTIONALITY_ENABLED        1    // 1 = toggle LED on each measurement
+#define USE_LEVEL_STRING                 0    // 0 = numeric level output, 1 = text output
+
+// -----------------------------------------------------------------------------
+// Stability parameters
+// -----------------------------------------------------------------------------
+#define ADC_OVERSAMPLE     10    // ADC samples averaged per charge cycle
+#define CHARGE_DELAY_US    1000  // Capacitor charge time (µs)
+#define MEASURE_REPEAT     15    // Repeated charge cycles per measurement (outlier rejection)
 
 // -----------------------------------------------------------------------------
 // Moving average filter (5-point)
 // -----------------------------------------------------------------------------
-#define FILTER_SAMPLES          5
-static float g_cap_buffer[FILTER_SAMPLES] = {0};
-static uint8_t g_cap_idx = 0;
-static float g_cap_sum = 0;
-static uint8_t g_cap_cnt = 0;
+#define FILTER_SAMPLES  5
+static float    g_cap_buffer[FILTER_SAMPLES] = {0};
+static uint8_t  g_cap_idx = 0;
+static float    g_cap_sum = 0;
+static uint8_t  g_cap_cnt = 0;
 
 // -----------------------------------------------------------------------------
-// Rain data structure (only capacitance and level retained)
+// Rain intensity
 // -----------------------------------------------------------------------------
 typedef enum {
-    RAIN_NONE = 0,
-    RAIN_LIGHT,
-    RAIN_MODERATE,
-    RAIN_HEAVY
+    RAIN_NONE     = 0,
+    RAIN_LIGHT    = 1,
+    RAIN_MODERATE = 2,
+    RAIN_HEAVY    = 3
 } rain_intensity_t;
 
 static struct {
-    float capacitance_pF;                // Current filtered capacitance
-    rain_intensity_t intensity_level;    // Rain intensity level
+    float            capacitance_pF;
+    rain_intensity_t intensity_level;
 } g_rain_sensor = {0};
 
 // -----------------------------------------------------------------------------
-// RTC related global variables
+// RTC globals
 // -----------------------------------------------------------------------------
 static const nrf_drv_rtc_t rtc = NRF_DRV_RTC_INSTANCE(2);
 static uint32_t rtc_ticks = RTC_US_TO_TICKS(RAIN_MEASUREMENT_INTERVAL_SEC * 1000000UL, RTC_FREQUENCY);
-static uint32_t measurement_counter = 0;
 static volatile bool g_do_measurement = false;  // set by RTC ISR, consumed in main loop
 static volatile bool g_saadc_cal_done = false;  // set by saadc_callback on CALIBRATEDONE
 
 // -----------------------------------------------------------------------------
-// Function declarations
+// Function prototypes
 // -----------------------------------------------------------------------------
-static float measure_capacitance(void);
-static void perform_saadc_sample(nrf_saadc_value_t *sample, uint8_t channel);
-static void dwt_enable(void);
-static uint32_t micros_get(void);
-static void saadc_callback(nrf_drv_saadc_evt_t const *p_event);
-static void saadc_init(void);
-static void lfclk_config(void);
-static void rtc_handler(nrf_drv_rtc_int_type_t int_type);
-static void rtc_config(void);
-static void gpio_init(void);
-static void init_log(void);
-static void process_rain_measurement(float capacitance);
+static float            measure_capacitance(void);
+static void             perform_saadc_sample(nrf_saadc_value_t *sample, uint8_t channel);
+static void             saadc_callback(nrf_drv_saadc_evt_t const *p_event);
+static void             saadc_init(void);
+static void             lfclk_config(void);
+static void             rtc_handler(nrf_drv_rtc_int_type_t int_type);
+static void             rtc_config(void);
+static void             gpio_init(void);
+static void             init_log(void);
+static void             process_rain_measurement(float capacitance);
 static rain_intensity_t classify_rain_intensity(float capacitance);
 
-// =============================================================================
-// New calibration function declarations
-// =============================================================================
 #if CALIBRATION_FUNCTIONALITY_ENABLED
-static void perform_calibration(void);
+static void     perform_calibration(void);
 static uint16_t measure_small_cap_adc(void);
-static float collect_measurements(float cap_value, const char* cap_name, int num_measurements, int wait_time);
+static float    collect_measurements(float cap_value, const char *cap_name,
+                                     int num_measurements, int wait_time);
 #endif
 
 // -----------------------------------------------------------------------------
-// DWT microsecond timer
-// -----------------------------------------------------------------------------
-static void dwt_enable(void)
-{
-    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-}
-
-static uint32_t micros_get(void)
-{
-    return DWT->CYCCNT / 64;
-}
-
-// -----------------------------------------------------------------------------
-// SAADC single sample 
+// SAADC blocking single-sample helper
 // -----------------------------------------------------------------------------
 static void perform_saadc_sample(nrf_saadc_value_t *sample, uint8_t channel)
 {
@@ -175,114 +155,103 @@ static void perform_saadc_sample(nrf_saadc_value_t *sample, uint8_t channel)
 }
 
 // -----------------------------------------------------------------------------
-// Capacitance measurement core function (only small capacitance method, with enhanced stability)
+// Capacitance measurement
+//   15 charge/discharge cycles, 10x oversampling per cycle,
+//   bubble-sort + trim 3 outliers each side, then apply calibration formula.
 // -----------------------------------------------------------------------------
 static float measure_capacitance(void)
 {
-    uint32_t adc_vals[MEASURE_REPEAT];
-    uint32_t adc_sum;
+    uint32_t          adc_vals[MEASURE_REPEAT];
     nrf_saadc_value_t adc_val;
-    float capacitance;
 
-    // Perform multiple measurements for outlier rejection
-    for (int repeat = 0; repeat < MEASURE_REPEAT; repeat++) {
-        // ----- Forced discharge: ensure initial capacitor voltage zero
+    for (int repeat = 0; repeat < MEASURE_REPEAT; repeat++)
+    {
+        // Discharge phase
         nrf_gpio_cfg_output(RAIN_SENSOR_OUT_PIN);
         nrf_gpio_cfg_output(RAIN_SENSOR_IN_PIN);
         nrf_gpio_pin_clear(RAIN_SENSOR_OUT_PIN);
         nrf_gpio_pin_clear(RAIN_SENSOR_IN_PIN);
         nrf_delay_ms(5);
-        // After discharge, restore to high impedance and wait for pins to stabilize (increased)
+
         nrf_gpio_cfg_default(RAIN_SENSOR_OUT_PIN);
         nrf_gpio_cfg_default(RAIN_SENSOR_IN_PIN);
-        nrf_delay_us(1000);                 // extended stabilization time
+        nrf_delay_us(1000);
 
-        // ----- Charge and read ADC -----
+        // Charge phase
         nrf_gpio_cfg_output(RAIN_SENSOR_OUT_PIN);
         nrf_gpio_pin_set(RAIN_SENSOR_OUT_PIN);
-        nrf_delay_us(CHARGE_DELAY_US);       // increased charging time for stability
+        nrf_delay_us(CHARGE_DELAY_US);
         nrf_gpio_cfg_default(RAIN_SENSOR_IN_PIN);
-        nrf_delay_us(10);                    // wait for voltage to stabilize before ADC
+        nrf_delay_us(10);
 
-        // Multiple ADC reads and average to reduce noise (oversampling)
-        adc_sum = 0;
-        for (int i = 0; i < ADC_OVERSAMPLE; i++) {
+        // Oversampling
+        uint32_t adc_sum = 0;
+        for (int i = 0; i < ADC_OVERSAMPLE; i++)
+        {
             perform_saadc_sample(&adc_val, RAIN_SENSOR_ADC_CHANNEL_IN);
             adc_sum += adc_val;
         }
-        adc_vals[repeat] = adc_sum / ADC_OVERSAMPLE;   // store averaged ADC value
+        adc_vals[repeat] = adc_sum / ADC_OVERSAMPLE;
 
-        // Discharge after each measurement
         nrf_gpio_pin_clear(RAIN_SENSOR_OUT_PIN);
         nrf_gpio_cfg_default(RAIN_SENSOR_OUT_PIN);
-
-        // Short delay between repetitions to allow full discharge
         nrf_delay_ms(10);
     }
 
-    // --- Outlier removal: sort the ADC values and discard lowest and highest
-    // Simple bubble sort for small array
-    for (int i = 0; i < MEASURE_REPEAT - 1; i++) {
-        for (int j = i + 1; j < MEASURE_REPEAT; j++) {
+    // Bubble sort
+    for (int i = 0; i < MEASURE_REPEAT - 1; i++)
+        for (int j = i + 1; j < MEASURE_REPEAT; j++)
             if (adc_vals[i] > adc_vals[j]) {
-                uint32_t temp = adc_vals[i];
-                adc_vals[i] = adc_vals[j];
-                adc_vals[j] = temp;
+                uint32_t tmp = adc_vals[i];
+                adc_vals[i]  = adc_vals[j];
+                adc_vals[j]  = tmp;
             }
-        }
-    }
-    // Remove more outliers for better stability (trim 3 each side if enough samples)
-    int trim = (MEASURE_REPEAT >= 7) ? 3 : 1;
-    if (MEASURE_REPEAT <= 2*trim) trim = 0;
-    uint32_t sum = 0;
-    int count = MEASURE_REPEAT - 2*trim;
-    for (int i = trim; i < MEASURE_REPEAT - trim; i++) {
-        sum += adc_vals[i];
-    }
-    uint32_t val = sum / count;   // final averaged ADC value
 
-    // Calibration formula: net capacitance = val * K / (4095 - val) - C_stray
-    capacitance = (float)val * IN_STRAY_CAP_TO_GND / (float)(MAX_ADC_VALUE - val) - C_STRAY;
+    // Trim 3 from each side
+    int trim = (MEASURE_REPEAT >= 7) ? 3 : 1;
+    if (MEASURE_REPEAT <= 2 * trim) trim = 0;
+    uint32_t sum   = 0;
+    int      count = MEASURE_REPEAT - 2 * trim;
+    for (int i = trim; i < MEASURE_REPEAT - trim; i++)
+        sum += adc_vals[i];
+    uint32_t val = sum / count;
+
+    float capacitance = (float)val * IN_STRAY_CAP_TO_GND / (float)(MAX_ADC_VALUE - val) - C_STRAY;
     if (capacitance < 0) capacitance = 0;
-    NRF_LOG_DEBUG("Small cap: ADC=%d, C=%.2f pF", val, capacitance);
+    NRF_LOG_DEBUG("Cap: ADC=%d, C=%d pF", val, (int)capacitance);
     return capacitance;
 }
 
 // -----------------------------------------------------------------------------
-// Rain processing functions (only capacitance and level retained, output rounded capacitance and numeric level)
+// Rain intensity classification
 // -----------------------------------------------------------------------------
 static rain_intensity_t classify_rain_intensity(float capacitance)
 {
-    // Thresholds need to be calibrated according to your sensor characteristics (values below are examples)
-    if (capacitance < 150.0f)        return RAIN_NONE;
+    if      (capacitance < 150.0f) return RAIN_NONE;
     else if (capacitance < 250.0f) return RAIN_LIGHT;
     else if (capacitance < 500.0f) return RAIN_MODERATE;
-    else                          return RAIN_HEAVY;
+    else                           return RAIN_HEAVY;
 }
 
 static void process_rain_measurement(float capacitance)
 {
-    g_rain_sensor.capacitance_pF = capacitance;
+    g_rain_sensor.capacitance_pF  = capacitance;
     g_rain_sensor.intensity_level = classify_rain_intensity(capacitance);
 
 #if (USE_LEVEL_STRING == 1)
-    // Level text description (requires log module support %s)
     const char *level_str[] = {"NONE", "LIGHT", "MODERATE", "HEAVY"};
     NRF_LOG_INFO("Capacitance: %d pF, Level: %s",
-                 (int)capacitance,
-                 level_str[g_rain_sensor.intensity_level]);
+                 (int)capacitance, level_str[g_rain_sensor.intensity_level]);
 #else
-    // Output integer capacitance and level number (most reliable)
     NRF_LOG_INFO("Capacitance: %d pF, Level: %d",
-                 (int)capacitance,
-                 g_rain_sensor.intensity_level);
+                 (int)capacitance, (int)g_rain_sensor.intensity_level);
 #endif
 }
 
 // -----------------------------------------------------------------------------
 // SAADC callback
 // -----------------------------------------------------------------------------
-void saadc_callback(nrf_drv_saadc_evt_t const *p_event)
+static void saadc_callback(nrf_drv_saadc_evt_t const *p_event)
 {
     if (p_event->type == NRF_DRV_SAADC_EVT_CALIBRATEDONE)
     {
@@ -293,51 +262,45 @@ void saadc_callback(nrf_drv_saadc_evt_t const *p_event)
 }
 
 // -----------------------------------------------------------------------------
-// SAADC initialization (dual channel)
+// SAADC initialisation — dual channel, polling (sample_convert) mode
 // -----------------------------------------------------------------------------
 static void saadc_init(void)
 {
     ret_code_t err_code;
+
     nrf_drv_saadc_config_t saadc_config = {
-        .low_power_mode = true,
-        .resolution = NRF_SAADC_RESOLUTION_12BIT,
-        .oversample = NRF_SAADC_OVERSAMPLE_DISABLED,
+        .low_power_mode     = true,
+        .resolution         = NRF_SAADC_RESOLUTION_12BIT,
+        .oversample         = NRF_SAADC_OVERSAMPLE_DISABLED,
         .interrupt_priority = APP_IRQ_PRIORITY_LOW
     };
-
     NRF_LOG_INFO("  - Initializing SAADC driver...");
     NRF_LOG_FLUSH();
     err_code = nrf_drv_saadc_init(&saadc_config, saadc_callback);
     APP_ERROR_CHECK(err_code);
-    NRF_LOG_INFO("    SAADC driver initialized.");
-    NRF_LOG_FLUSH();
 
-    nrf_saadc_channel_config_t channel_config = {
+    nrf_saadc_channel_config_t ch_cfg = {
         .resistor_p = NRF_SAADC_RESISTOR_DISABLED,
         .resistor_n = NRF_SAADC_RESISTOR_DISABLED,
-        .gain = NRF_SAADC_GAIN1_6,
-        .reference = NRF_SAADC_REFERENCE_INTERNAL,
-        .acq_time = NRF_SAADC_ACQTIME_10US,
-        .mode = NRF_SAADC_MODE_SINGLE_ENDED,
-        .burst = NRF_SAADC_BURST_DISABLED,
-        .pin_n = NRF_SAADC_INPUT_DISABLED
+        .gain       = NRF_SAADC_GAIN1_6,
+        .reference  = NRF_SAADC_REFERENCE_INTERNAL,
+        .acq_time   = NRF_SAADC_ACQTIME_10US,
+        .mode       = NRF_SAADC_MODE_SINGLE_ENDED,
+        .burst      = NRF_SAADC_BURST_DISABLED,
+        .pin_n      = NRF_SAADC_INPUT_DISABLED
     };
 
-    NRF_LOG_INFO("  - Configuring channel 0 (AIN0)...");
+    NRF_LOG_INFO("  - Configuring AIN0 (ch0)...");
     NRF_LOG_FLUSH();
-    channel_config.pin_p = NRF_SAADC_INPUT_AIN0;
-    err_code = nrf_drv_saadc_channel_init(RAIN_SENSOR_ADC_CHANNEL_OUT, &channel_config);
+    ch_cfg.pin_p = NRF_SAADC_INPUT_AIN0;
+    err_code = nrf_drv_saadc_channel_init(RAIN_SENSOR_ADC_CHANNEL_OUT, &ch_cfg);
     APP_ERROR_CHECK(err_code);
-    NRF_LOG_INFO("    Channel 0 ready.");
-    NRF_LOG_FLUSH();
 
-    NRF_LOG_INFO("  - Configuring channel 1 (AIN1)...");
+    NRF_LOG_INFO("  - Configuring AIN1 (ch1)...");
     NRF_LOG_FLUSH();
-    channel_config.pin_p = NRF_SAADC_INPUT_AIN1;
-    err_code = nrf_drv_saadc_channel_init(RAIN_SENSOR_ADC_CHANNEL_IN, &channel_config);
+    ch_cfg.pin_p = NRF_SAADC_INPUT_AIN1;
+    err_code = nrf_drv_saadc_channel_init(RAIN_SENSOR_ADC_CHANNEL_IN, &ch_cfg);
     APP_ERROR_CHECK(err_code);
-    NRF_LOG_INFO("    Channel 1 ready.");
-    NRF_LOG_FLUSH();
 
     NRF_LOG_INFO("  - Starting SAADC hardware offset calibration...");
     NRF_LOG_INFO("    (Trims internal ADC offset; completes before first measurement)");
@@ -350,7 +313,7 @@ static void saadc_init(void)
 }
 
 // -----------------------------------------------------------------------------
-// Low frequency clock configuration (with wait for ready)
+// Low-frequency clock
 // -----------------------------------------------------------------------------
 static void lfclk_config(void)
 {
@@ -359,26 +322,21 @@ static void lfclk_config(void)
     NRF_LOG_INFO("  - Requesting LFCLK...");
     NRF_LOG_FLUSH();
     nrf_drv_clock_lfclk_request(NULL);
-
-    // Wait for LFCLK to be started
-    NRF_LOG_INFO("  - Waiting for LFCLK to become stable...");
+    NRF_LOG_INFO("  - Waiting for LFCLK to stabilise...");
     NRF_LOG_FLUSH();
     while (!nrf_drv_clock_lfclk_is_running())
-    {
         nrf_delay_ms(1);
-    }
-    NRF_LOG_INFO("    LFCLK is running.");
+    NRF_LOG_INFO("    LFCLK running.");
     NRF_LOG_FLUSH();
 }
 
 // -----------------------------------------------------------------------------
-// RTC interrupt handler (periodic measurement)
+// RTC interrupt handler — sets flag only; measurement runs in main loop
 // -----------------------------------------------------------------------------
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
 {
     if (int_type != NRF_DRV_RTC_INT_COMPARE0) return;
 
-    // Set flag only — measurement runs in main loop (nrf_delay + SAADC cannot run in ISR)
     g_do_measurement = true;
 
     ret_code_t err_code = nrf_drv_rtc_cc_set(&rtc, 0, rtc_ticks, true);
@@ -396,70 +354,54 @@ static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
 static void rtc_config(void)
 {
     ret_code_t err_code;
-    nrf_drv_rtc_config_t rtc_config = {
-        .prescaler = RTC_FREQ_TO_PRESCALER(RTC_FREQUENCY)
-    };
+    nrf_drv_rtc_config_t cfg = { .prescaler = RTC_FREQ_TO_PRESCALER(RTC_FREQUENCY) };
+
     NRF_LOG_INFO("  - Initializing RTC...");
     NRF_LOG_FLUSH();
-    err_code = nrf_drv_rtc_init(&rtc, &rtc_config, rtc_handler);
+    err_code = nrf_drv_rtc_init(&rtc, &cfg, rtc_handler);
     APP_ERROR_CHECK(err_code);
-    NRF_LOG_INFO("    RTC initialized.");
-    NRF_LOG_FLUSH();
 
-    NRF_LOG_INFO("  - Setting RTC compare value...");
-    NRF_LOG_FLUSH();
     err_code = nrf_drv_rtc_cc_set(&rtc, 0, rtc_ticks, true);
     APP_ERROR_CHECK(err_code);
-    NRF_LOG_INFO("    Compare value set.");
-    NRF_LOG_FLUSH();
 
-    NRF_LOG_INFO("  - Enabling RTC...");
-    NRF_LOG_FLUSH();
     nrf_drv_rtc_enable(&rtc);
-    NRF_LOG_INFO("    RTC enabled. Measurement interval: %d s", RAIN_MEASUREMENT_INTERVAL_SEC);
+    NRF_LOG_INFO("    RTC enabled. Interval: %d s", RAIN_MEASUREMENT_INTERVAL_SEC);
     NRF_LOG_FLUSH();
 }
 
 // -----------------------------------------------------------------------------
-// GPIO initialization
+// GPIO initialisation
 // -----------------------------------------------------------------------------
 static void gpio_init(void)
 {
-    #if LED_FUNCTIONALITY_ENABLED
-        LEDS_CONFIGURE(LEDS_MASK);
-        LEDS_OFF(LEDS_MASK);
-    #endif
-
+#if LED_FUNCTIONALITY_ENABLED
+    LEDS_CONFIGURE(LEDS_MASK);
+    LEDS_OFF(LEDS_MASK);
+#endif
     nrf_gpio_cfg_default(RAIN_SENSOR_OUT_PIN);
     nrf_gpio_cfg_default(RAIN_SENSOR_IN_PIN);
 }
 
 // -----------------------------------------------------------------------------
-// Log initialization
+// Logging initialisation
 // -----------------------------------------------------------------------------
 static void init_log(void)
 {
     ret_code_t err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
     NRF_LOG_DEFAULT_BACKENDS_INIT();
-    NRF_LOG_INFO("Rainfall Sensor System Initialized (Optimized, Integer Output)");
-    NRF_LOG_FLUSH();
 }
 
-// =============================================================================
-// Calibration mode function implementation (improved)
-// =============================================================================
+// -----------------------------------------------------------------------------
+// Calibration mode (compiled only when CALIBRATION_FUNCTIONALITY_ENABLED = 1)
+// -----------------------------------------------------------------------------
 #if CALIBRATION_FUNCTIONALITY_ENABLED
-/**
- * @brief Small capacitance ADC measurement specifically for calibration (returns raw ADC average, not converted to capacitance)
- *        Uses improved timing and outlier rejection.
- */
+
 static uint16_t measure_small_cap_adc(void)
 {
     nrf_saadc_value_t adc_val = 0;
-    uint32_t adc_sum = 0;
+    uint32_t          adc_sum = 0;
 
-    // Forced discharge
     nrf_gpio_cfg_output(RAIN_SENSOR_OUT_PIN);
     nrf_gpio_cfg_output(RAIN_SENSOR_IN_PIN);
     nrf_gpio_pin_clear(RAIN_SENSOR_OUT_PIN);
@@ -467,201 +409,119 @@ static uint16_t measure_small_cap_adc(void)
     nrf_delay_ms(5);
     nrf_gpio_cfg_default(RAIN_SENSOR_OUT_PIN);
     nrf_gpio_cfg_default(RAIN_SENSOR_IN_PIN);
-    nrf_delay_us(1000);                     // extended stabilization
+    nrf_delay_us(1000);
 
-    // Charge
     nrf_gpio_cfg_output(RAIN_SENSOR_OUT_PIN);
     nrf_gpio_pin_set(RAIN_SENSOR_OUT_PIN);
-    nrf_delay_us(CHARGE_DELAY_US);          // use same charging time
+    nrf_delay_us(CHARGE_DELAY_US);
     nrf_gpio_cfg_default(RAIN_SENSOR_IN_PIN);
-    nrf_delay_us(10);                       // stabilization delay
+    nrf_delay_us(10);
 
-    // Collect multiple ADC readings (oversampling within a single measurement)
-    adc_sum = 0;
     for (int i = 0; i < ADC_OVERSAMPLE; i++) {
         perform_saadc_sample(&adc_val, RAIN_SENSOR_ADC_CHANNEL_IN);
         adc_sum += adc_val;
     }
     uint16_t raw_val = adc_sum / ADC_OVERSAMPLE;
 
-    // Discharge
     nrf_gpio_pin_clear(RAIN_SENSOR_OUT_PIN);
     nrf_gpio_cfg_default(RAIN_SENSOR_OUT_PIN);
-
     return raw_val;
 }
 
-/**
- * @brief Helper function to collect measurements for a given capacitor, with outlier removal.
- *        Returns the averaged ADC value after removing lowest and highest readings.
- */
-static float collect_measurements(float cap_value, const char* cap_name, int num_measurements, int wait_time)
+static float collect_measurements(float cap_value, const char *cap_name,
+                                  int num_measurements, int wait_time)
 {
-    NRF_LOG_INFO("==========================================");
-    NRF_LOG_FLUSH();
-    NRF_LOG_INFO("Step: Connect the %.0f pF capacitor between sensor pins (P0.02 and P0.03).", cap_value);
-    NRF_LOG_FLUSH();
-    NRF_LOG_INFO("Waiting %d seconds for you to connect it...", wait_time);
-    NRF_LOG_FLUSH();
-    for (int i = wait_time; i > 0; i--) {
-        NRF_LOG_INFO("  %d...", i);
-        NRF_LOG_FLUSH();
-        nrf_delay_ms(1000);
-    }
+    NRF_LOG_INFO("=========================================="); NRF_LOG_FLUSH();
+    NRF_LOG_INFO("Connect %.0f pF capacitor between P0.02 and P0.03.", cap_value); NRF_LOG_FLUSH();
+    NRF_LOG_INFO("Waiting %d seconds...", wait_time); NRF_LOG_FLUSH();
+    for (int i = wait_time; i > 0; i--) { NRF_LOG_INFO("  %d...", i); NRF_LOG_FLUSH(); nrf_delay_ms(1000); }
 
-    NRF_LOG_INFO("Now measuring %s capacitor...", cap_name);
-    NRF_LOG_FLUSH();
-    uint16_t measurements[50]; // assume enough space, adjust if num_measurements > 50
-    if (num_measurements > 50) num_measurements = 50; // safety
+    if (num_measurements > 50) num_measurements = 50;
+    uint16_t measurements[50];
+
+    NRF_LOG_INFO("Measuring %s...", cap_name); NRF_LOG_FLUSH();
     for (int i = 0; i < num_measurements; i++) {
         measurements[i] = measure_small_cap_adc();
-        NRF_LOG_INFO("  Measurement %2d: ADC = %4d", i+1, measurements[i]);
-        NRF_LOG_FLUSH();
-        nrf_delay_ms(100); // small delay between measurements
+        NRF_LOG_INFO("  [%2d] ADC = %4d", i + 1, measurements[i]);
+        nrf_delay_ms(100);
     }
 
-    // Sort the array to find min and max (simple bubble sort for small array)
-    for (int i = 0; i < num_measurements-1; i++) {
-        for (int j = i+1; j < num_measurements; j++) {
+    for (int i = 0; i < num_measurements - 1; i++)
+        for (int j = i + 1; j < num_measurements; j++)
             if (measurements[i] > measurements[j]) {
-                uint16_t temp = measurements[i];
+                uint16_t tmp    = measurements[i];
                 measurements[i] = measurements[j];
-                measurements[j] = temp;
+                measurements[j] = tmp;
             }
-        }
-    }
 
-    // Remove 2 lowest and 2 highest (if enough samples)
-    int trim = 2;
-    if (num_measurements < 2*trim + 1) {
-        trim = 0; // fallback: no removal
-    }
-    uint32_t sum = 0;
-    int count = num_measurements - 2*trim;
-    for (int i = trim; i < num_measurements - trim; i++) {
-        sum += measurements[i];
-    }
+    int trim = (num_measurements >= 5) ? 2 : 0;
+    uint32_t sum   = 0;
+    int      count = num_measurements - 2 * trim;
+    for (int i = trim; i < num_measurements - trim; i++) sum += measurements[i];
     float avg = (float)sum / count;
-    NRF_LOG_INFO("Average ADC (after removing %d lowest and %d highest): %d", trim, trim, (int)avg);
-    NRF_LOG_FLUSH();
+
+    NRF_LOG_INFO("Average ADC (trim=%d each side): %d", trim, (int)avg); NRF_LOG_FLUSH();
     return avg;
 }
 
-/**
- * @brief Calibration main process (two-point calibration: 10pF and 100pF) with enhanced stability and diagnostics.
- */
 static void perform_calibration(void)
 {
-    NRF_LOG_INFO("===== Calibration Mode (Improved) =====");
-    NRF_LOG_FLUSH();
-    NRF_LOG_INFO("You will need two known capacitors: 10pF and 100pF.");
-    NRF_LOG_FLUSH();
-    NRF_LOG_INFO("Make sure no other capacitance is connected.");
-    NRF_LOG_FLUSH();
-    NRF_LOG_INFO("This calibration will measure each capacitor 20 times and remove outliers.");
-    NRF_LOG_FLUSH();
+    const float C1 = 10.0f, C2 = 100.0f;
+    const int   N  = 20, WAIT = 10;
 
-    const float C1 = 10.0f;   // Known capacitor 1 (pF)
-    const float C2 = 100.0f;  // Known capacitor 2 (pF)
-    const int num_measurements = 20;  // Number of measurements per capacitor (after outlier removal)
-    const int wait_time = 10;  // Wait time (seconds), can be adjusted as needed
+    NRF_LOG_INFO("===== Two-Point Calibration Mode ====="); NRF_LOG_FLUSH();
+    NRF_LOG_INFO("Required: 10 pF and 100 pF reference capacitors."); NRF_LOG_FLUSH();
 
-    // Measure 10pF
-    float val1_avg = collect_measurements(C1, "10pF", num_measurements, wait_time);
+    float val1 = collect_measurements(C1, "10pF",  N, WAIT);
+    float val2 = collect_measurements(C2, "100pF", N, WAIT);
 
-    // Measure 100pF
-    float val2_avg = collect_measurements(C2, "100pF", num_measurements, wait_time);
+    float x1 = val1 / (MAX_ADC_VALUE - val1);
+    float x2 = val2 / (MAX_ADC_VALUE - val2);
+    float K       = (C2 - C1) / (x2 - x1);
+    float C_stray = x1 * K - C1;
 
-    // Calculate x = val / (4095 - val)
-    float x1 = val1_avg / (MAX_ADC_VALUE - val1_avg);
-    float x2 = val2_avg / (MAX_ADC_VALUE - val2_avg);
+    NRF_LOG_INFO("=========================================="); NRF_LOG_FLUSH();
+    NRF_LOG_INFO("Calibration results:"); NRF_LOG_FLUSH();
+    NRF_LOG_INFO("  #define IN_STRAY_CAP_TO_GND  %d.%df",
+                 (int)K, (int)((K - (int)K) * 10)); NRF_LOG_FLUSH();
+    NRF_LOG_INFO("  #define C_STRAY              %d.%df",
+                 (int)C_stray, (int)((C_stray - (int)C_stray) * 10)); NRF_LOG_FLUSH();
+    NRF_LOG_INFO("Update these in main.c then set CALIBRATION_FUNCTIONALITY_ENABLED = 0."); NRF_LOG_FLUSH();
+    NRF_LOG_INFO("=========================================="); NRF_LOG_FLUSH();
 
-    // Print intermediate variables (for debugging)
-    NRF_LOG_INFO("x1 = %d/1000", (int)(x1 * 1000));   // Retain three decimal places
-    NRF_LOG_INFO("x2 = %d/1000", (int)(x2 * 1000));
-    NRF_LOG_FLUSH();
-
-    // Solve equations to find K and C_stray
-    float K = (C2 - C1) / (x2 - x1);
-    float C_stray = x1 * K - C1;   // or use x2*K - C2
-
-    NRF_LOG_INFO("==========================================");
-    NRF_LOG_FLUSH();
-    NRF_LOG_INFO("Calibration results (multiply by 10 for one decimal):");
-    NRF_LOG_FLUSH();
-    // Print as integers (retain one decimal place)
-    NRF_LOG_INFO("  IN_STRAY_CAP_TO_GND = %d/10", (int)(K * 10));
-    NRF_LOG_FLUSH();
-    NRF_LOG_INFO("  C_STRAY = %d/10 pF", (int)(C_stray * 10));
-    NRF_LOG_FLUSH();
-    NRF_LOG_INFO("==========================================");
-    NRF_LOG_FLUSH();
-    NRF_LOG_INFO("Please update these values in the code (top of file)");
-    NRF_LOG_FLUSH();
-    NRF_LOG_INFO("and set CALIBRATION_FUNCTIONALITY_ENABLED back to 0.");
-    NRF_LOG_FLUSH();
-
-    // After calibration, enter low-power loop, no further measurements
-    while (1) {
-        NRF_LOG_PROCESS();
-        nrf_pwr_mgmt_run();
-    }
+    while (1) { NRF_LOG_PROCESS(); nrf_pwr_mgmt_run(); }
 }
 
 #endif // CALIBRATION_FUNCTIONALITY_ENABLED
 
 // -----------------------------------------------------------------------------
-// Main function
+// Main
 // -----------------------------------------------------------------------------
 int main(void)
 {
-    // Initialize log
     init_log();
-    NRF_LOG_INFO("===== Step 0: Log initialized =====");
+    NRF_LOG_INFO("===== nRF52833 Capacitive Rain Sensor =====");
+    NRF_LOG_INFO("K=%d/10, Cstray=%d/10 pF, Interval=%ds",
+                 (int)(IN_STRAY_CAP_TO_GND * 10),
+                 (int)(C_STRAY * 10),
+                 RAIN_MEASUREMENT_INTERVAL_SEC);
     NRF_LOG_FLUSH();
 
-    // GPIO initialization
-    NRF_LOG_INFO("===== Step 1: GPIO init =====");
-    gpio_init();
-    NRF_LOG_FLUSH();
-
-    NRF_LOG_INFO("===== Precision Agriculture Rain Sensor =====");
-    NRF_LOG_INFO("Capacitance Meter Method (470uF-18pF) - Calibrated");
-    NRF_LOG_INFO("K=%d/10, Cstray=%d/10 pF, Rpullup=13k", 
-             (int)(IN_STRAY_CAP_TO_GND * 10), 
-             (int)(C_STRAY * 10));
-    NRF_LOG_INFO("Measurement interval: %d seconds", RAIN_MEASUREMENT_INTERVAL_SEC);
-    NRF_LOG_FLUSH();
-
-    // DWT initialization
-    NRF_LOG_INFO("===== Step 2: DWT enable =====");
-    dwt_enable();
-    NRF_LOG_FLUSH();
-
-    // Low frequency clock configuration
-    NRF_LOG_INFO("===== Step 3: LFCLK config =====");
-    lfclk_config();
-    NRF_LOG_FLUSH();
-
-    // SAADC initialization
-    NRF_LOG_INFO("===== Step 4: SAADC init =====");
-    saadc_init();
-    NRF_LOG_FLUSH();
+    NRF_LOG_INFO("Step 1: GPIO init");       gpio_init();
+    NRF_LOG_INFO("Step 2: LFCLK config");    lfclk_config();
+    NRF_LOG_INFO("Step 3: SAADC init");      saadc_init();    NRF_LOG_FLUSH();
 
 #if CALIBRATION_FUNCTIONALITY_ENABLED
-    // Calibration mode (do not start RTC)
-    NRF_LOG_INFO("===== Step 5: Entering calibration mode =====");
-    perform_calibration();
+    NRF_LOG_INFO("Step 4: Calibration mode"); NRF_LOG_FLUSH();
+    perform_calibration();  // does not return
 #else
-    // Normal measurement mode
-    NRF_LOG_INFO("===== Step 5: Power management init =====");
+    NRF_LOG_INFO("Step 4: Power management init");
     ret_code_t err_code = nrf_pwr_mgmt_init();
     APP_ERROR_CHECK(err_code);
-    NRF_LOG_FLUSH();
 
-    NRF_LOG_INFO("===== Step 6: RTC config =====");
+    NRF_LOG_INFO("Step 5: RTC config");
     rtc_config();
-    NRF_LOG_INFO("===== System ready. Output: integer capacitance and level (0=NONE,1=LIGHT,2=MODERATE,3=HEAVY) =====");
+    NRF_LOG_INFO("System ready. Output: capacitance (pF) + level (0=NONE 1=LIGHT 2=MODERATE 3=HEAVY)");
     NRF_LOG_FLUSH();
 
     while (1)
@@ -669,16 +529,15 @@ int main(void)
         if (g_do_measurement)
         {
             g_do_measurement = false;
-            measurement_counter++;
 
             float raw_cap = measure_capacitance();
 
             if (raw_cap > 0.1f)
             {
-                g_cap_sum -= g_cap_buffer[g_cap_idx];
+                g_cap_sum              -= g_cap_buffer[g_cap_idx];
                 g_cap_buffer[g_cap_idx] = raw_cap;
-                g_cap_sum += raw_cap;
-                g_cap_idx = (g_cap_idx + 1) % FILTER_SAMPLES;
+                g_cap_sum              += raw_cap;
+                g_cap_idx               = (g_cap_idx + 1) % FILTER_SAMPLES;
                 if (g_cap_cnt < FILTER_SAMPLES) g_cap_cnt++;
 
                 float avg_cap = g_cap_sum / g_cap_cnt;
@@ -692,7 +551,3 @@ int main(void)
     }
 #endif
 }
-
-// -----------------------------------------------------------------------------
-// End of File
-// -----------------------------------------------------------------------------
