@@ -64,6 +64,8 @@ where `K` is a proportionality factor and `C_stray` is system stray capacitance,
 
 ## 📊 Performance Results
 
+![Results](Images/results.jpg)
+
 | Metric                       | Value                              |
 |------------------------------|------------------------------------|
 | 📏 Measurement range         | 10 pF – 500 pF                     |

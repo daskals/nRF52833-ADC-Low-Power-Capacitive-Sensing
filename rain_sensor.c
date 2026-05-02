@@ -40,14 +40,14 @@
 // -----------------------------------------------------------------------------
 // Measurement parameters
 // -----------------------------------------------------------------------------
-#define ADC_OVERSAMPLE   10    // ADC reads averaged per charge cycle
+#define ADC_OVERSAMPLE   10    // ADC reads averaged per charge cycle (~√10 noise reduction)
 #define CHARGE_DELAY_US  1000  // Capacitor charge time (us)
-#define MEASURE_REPEAT   15    // Charge cycles per measurement (outlier rejection)
+#define MEASURE_REPEAT   21    // Charge cycles per measurement (outlier rejection)
 
 // -----------------------------------------------------------------------------
-// Moving average filter (5-point)
+// Moving average filter (8-point)
 // -----------------------------------------------------------------------------
-#define FILTER_SAMPLES  5
+#define FILTER_SAMPLES  8
 static float   g_cap_buffer[FILTER_SAMPLES] = {0};
 static uint8_t g_cap_idx = 0;
 static float   g_cap_sum = 0;
@@ -149,13 +149,13 @@ void rain_sensor_init(void)
     err_code = nrf_drv_saadc_channel_init(RAIN_SENSOR_ADC_CHANNEL_IN, &ch_cfg);
     APP_ERROR_CHECK(err_code);
 
-    NRF_LOG_INFO("  - Starting SAADC hardware offset calibration...");
-    NRF_LOG_INFO("    (Trims internal ADC offset; completes before first measurement)");
+    NRF_LOG_INFO("  - Starting SAADC offset calibration...");
     NRF_LOG_FLUSH();
     g_saadc_cal_done = false;
     APP_ERROR_CHECK(nrf_drv_saadc_calibrate_offset());
     while (!g_saadc_cal_done);
     NRF_LOG_INFO("    SAADC ready.");
+    NRF_LOG_INFO(" ");
     NRF_LOG_FLUSH();
 }
 
@@ -256,6 +256,16 @@ static void process_rain_measurement(float capacitance)
 // -----------------------------------------------------------------------------
 void rain_sensor_update(void)
 {
+    static bool first_run = true;
+    if (first_run)
+    {
+        first_run = false;
+        NRF_LOG_INFO("----------------------------------------");
+        NRF_LOG_INFO("Capacitance (pF) | Level");
+        NRF_LOG_INFO("----------------------------------------");
+        NRF_LOG_FLUSH();
+    }
+
     float raw_cap = measure_capacitance();
     if (raw_cap > 0.1f)
     {
