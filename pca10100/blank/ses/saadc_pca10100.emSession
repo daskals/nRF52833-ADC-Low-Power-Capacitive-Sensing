@@ -24,10 +24,7 @@
   <ProjectSessionItem path="saadc_pca10100_Spiros"/>
   <ProjectSessionItem path="saadc_pca10100_Spiros;saadc_pca10100_Spiros"/>
   <ProjectSessionItem path="saadc_pca10100_Spiros;saadc_pca10100_Spiros;Application"/>
-  <ProjectSessionItem path="saadc_pca10100_Spiros;saadc_pca10100_Spiros;Board Definition"/>
   <ProjectSessionItem path="saadc_pca10100_Spiros;saadc_pca10100_Spiros;Init"/>
-  <ProjectSessionItem path="saadc_pca10100_Spiros;saadc_pca10100_Spiros;None"/>
-  <ProjectSessionItem path="saadc_pca10100_Spiros;saadc_pca10100_Spiros;nRF_Drivers"/>
   <ProjectSessionItem path="saadc_pca10100_Spiros;saadc_pca10100_Spiros;nRF_Libraries"/>
   <ProjectSessionItem path="saadc_pca10100_Spiros;saadc_pca10100_Spiros;nRF_Log"/>
  </Project>
@@ -62,9 +59,10 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="405" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="132" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="25" y="1558" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="1520" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="405" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../saadc_low_power_rtc_Spyros_opt/main.c" selected="0" top="390" codecName=""/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="94" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="0" top="74" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="1558" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="1520" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="405" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../saadc_low_power_rtc_Spyros_opt/main.c" selected="0" top="390" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="22" y="42" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../rain_sensor.c" selected="1" top="174" codecName="Default"/>
  </Files>
  <ARMCrossStudioWindow activeProject="saadc_pca10100_Spiros" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="" debugSearchPath="" autoConnectCapabilities="3711"/>
 </session>
