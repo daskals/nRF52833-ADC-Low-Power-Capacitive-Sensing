@@ -192,7 +192,8 @@ static float measure_capacitance(void)
         for (int i = 0; i < ADC_OVERSAMPLE; i++)
         {
             perform_saadc_sample(&adc_val, RAIN_SENSOR_ADC_CHANNEL_IN);
-            adc_sum += adc_val;
+            if (adc_val < 0) adc_val = 0;
+            adc_sum += (uint32_t)adc_val;
         }
         adc_vals[repeat] = adc_sum / ADC_OVERSAMPLE;
 

@@ -5930,7 +5930,7 @@ Linker script and memory map
                 0x0000000000000001                . = ASSERT (((__init_rodata_start__ == __init_rodata_end__) || ((__init_rodata_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .init_rodata is too large to fit in FLASH1 memory segment)
                 0x00000000000003d0                __text_load_start__ = ALIGN (__init_rodata_end__, 0x4)
 
-.text           0x00000000000003d0     0x21f4
+.text           0x00000000000003d0     0x2204
                 0x00000000000003d0                __text_start__ = .
  *(.text .text.* .glue_7t .glue_7 .gnu.linkonce.t.* .gcc_except_table .ARM.extab* .gnu.linkonce.armextab.*)
  .glue_7        0x00000000000003d0        0x0 linker stubs
@@ -6185,71 +6185,71 @@ Linker script and memory map
                 0x0000000000001d84      0x104 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
                 0x0000000000001d84                rain_sensor_init
  .text.rain_sensor_update
-                0x0000000000001e88      0x280 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
+                0x0000000000001e88      0x290 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
                 0x0000000000001e88                rain_sensor_update
  .text._GetAvailWriteSpace
-                0x0000000000002108       0x12 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
+                0x0000000000002118       0x12 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
  .text._WriteNoCheck
-                0x000000000000211a       0x38 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
+                0x000000000000212a       0x38 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
  .text._WriteBlocking
-                0x0000000000002152       0x52 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
- .text._DoInit  0x00000000000021a4       0x60 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
+                0x0000000000002162       0x52 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
+ .text._DoInit  0x00000000000021b4       0x60 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
  .text.SEGGER_RTT_WriteNoLock
-                0x0000000000002204       0x60 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
-                0x0000000000002204                SEGGER_RTT_WriteNoLock
+                0x0000000000002214       0x60 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
+                0x0000000000002214                SEGGER_RTT_WriteNoLock
  .text.SEGGER_RTT_Init
-                0x0000000000002264        0x4 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
-                0x0000000000002264                SEGGER_RTT_Init
+                0x0000000000002274        0x4 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
+                0x0000000000002274                SEGGER_RTT_Init
  .text.nrf52_errata_36
-                0x0000000000002268       0x12 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
- *fill*         0x000000000000227a        0x2 
+                0x0000000000002278       0x12 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
+ *fill*         0x000000000000228a        0x2 
  .text.nvmc_wait
-                0x000000000000227c       0x10 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
-                0x000000000000227c                nvmc_wait
+                0x000000000000228c       0x10 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
+                0x000000000000228c                nvmc_wait
  .text.SystemInit
-                0x000000000000228c      0x188 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
-                0x000000000000228c                SystemInit
+                0x000000000000229c      0x188 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
+                0x000000000000229c                SystemInit
  .text.libc.__RAL_ascii_isctype
-                0x0000000000002414       0x1c C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002424       0x1c C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
  .text.libc.__RAL_ascii_toupper
-                0x0000000000002430        0xc C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002440        0xc C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
  .text.libc.__RAL_ascii_tolower
-                0x000000000000243c        0xc C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x000000000000244c        0xc C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
  .text.libc.__RAL_ascii_iswctype
-                0x0000000000002448       0x1c C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002458       0x1c C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
  .text.libc.__RAL_ascii_towupper
-                0x0000000000002464        0xc C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002474        0xc C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
  .text.libc.__RAL_ascii_towlower
-                0x0000000000002470        0xc C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002480        0xc C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
  .text.libc.__RAL_ascii_wctomb
-                0x000000000000247c        0xe C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x000000000000247c                __RAL_ascii_wctomb
+                0x000000000000248c        0xe C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x000000000000248c                __RAL_ascii_wctomb
  .text.libc.__RAL_ascii_mbtowc
-                0x000000000000248a       0x24 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x000000000000248a                __RAL_ascii_mbtowc
- *fill*         0x00000000000024ae        0x2 
+                0x000000000000249a       0x24 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x000000000000249a                __RAL_ascii_mbtowc
+ *fill*         0x00000000000024be        0x2 
  .text.libc.__RAL_isctype
-                0x00000000000024b0       0x14 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x00000000000024b0                __RAL_isctype
+                0x00000000000024c0       0x14 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x00000000000024c0                __RAL_isctype
  .text.libc.isprint
-                0x00000000000024c4        0xa C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x00000000000024c4                isprint
+                0x00000000000024d4        0xa C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x00000000000024d4                isprint
  .text.libc.memcpy
-                0x00000000000024ce       0x52 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2_asm.o)
-                0x00000000000024ce                __aeabi_memcpy
-                0x00000000000024ce                memcpy
-                0x00000000000024da                __aeabi_memcpy8
-                0x00000000000024da                __aeabi_memcpy4
+                0x00000000000024de       0x52 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2_asm.o)
+                0x00000000000024de                __aeabi_memcpy
+                0x00000000000024de                memcpy
+                0x00000000000024ea                __aeabi_memcpy8
+                0x00000000000024ea                __aeabi_memcpy4
  .text.libc.strcpy
-                0x0000000000002520       0x44 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2_asm.o)
-                0x0000000000002520                strcpy
+                0x0000000000002530       0x44 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2_asm.o)
+                0x0000000000002530                strcpy
  .text.libc.strlen
-                0x0000000000002564       0x60 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2_asm.o)
-                0x0000000000002564                strlen
-                0x00000000000025c4                . = ALIGN (MAX ((__text_start__ + 0x4), .), 0x4)
-                0x00000000000025c4                __text_end__ = (__text_start__ + SIZEOF (.text))
-                0x00000000000021f4                __text_size__ = SIZEOF (.text)
-                0x00000000000025c4                __text_load_end__ = __text_end__
+                0x0000000000002574       0x60 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2_asm.o)
+                0x0000000000002574                strlen
+                0x00000000000025d4                . = ALIGN (MAX ((__text_start__ + 0x4), .), 0x4)
+                0x00000000000025d4                __text_end__ = (__text_start__ + SIZEOF (.text))
+                0x0000000000002204                __text_size__ = SIZEOF (.text)
+                0x00000000000025d4                __text_load_end__ = __text_end__
 
 .vfp11_veneer   0x0000000100000000        0x0
  .vfp11_veneer  0x0000000100000000        0x0 linker stubs
@@ -6260,103 +6260,103 @@ Linker script and memory map
 .iplt           0x0000000100000000        0x0
  .iplt          0x0000000100000000        0x0 Output/Release/Obj/saadc_pca10100_Spiros/thumb_crt0.o
                 0x0000000000000001                . = ASSERT (((__text_start__ == __text_end__) || ((__text_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .text is too large to fit in FLASH1 memory segment)
-                0x00000000000025c4                __pwr_mgmt_data_load_start__ = ALIGN (__text_end__, 0x4)
+                0x00000000000025d4                __pwr_mgmt_data_load_start__ = ALIGN (__text_end__, 0x4)
 
-.pwr_mgmt_data  0x00000000000025c4        0x0
-                0x00000000000025c4                __pwr_mgmt_data_start__ = .
-                0x00000000000025c4                __start_pwr_mgmt_data = __pwr_mgmt_data_start__
+.pwr_mgmt_data  0x00000000000025d4        0x0
+                0x00000000000025d4                __pwr_mgmt_data_start__ = .
+                0x00000000000025d4                __start_pwr_mgmt_data = __pwr_mgmt_data_start__
  *(SORT_BY_NAME(.pwr_mgmt_data*))
-                0x00000000000025c4                __pwr_mgmt_data_end__ = (__pwr_mgmt_data_start__ + SIZEOF (.pwr_mgmt_data))
+                0x00000000000025d4                __pwr_mgmt_data_end__ = (__pwr_mgmt_data_start__ + SIZEOF (.pwr_mgmt_data))
                 0x0000000000000000                __pwr_mgmt_data_size__ = SIZEOF (.pwr_mgmt_data)
-                0x00000000000025c4                __stop_pwr_mgmt_data = __pwr_mgmt_data_end__
-                0x00000000000025c4                __pwr_mgmt_data_load_end__ = __pwr_mgmt_data_end__
+                0x00000000000025d4                __stop_pwr_mgmt_data = __pwr_mgmt_data_end__
+                0x00000000000025d4                __pwr_mgmt_data_load_end__ = __pwr_mgmt_data_end__
                 0x0000000000000001                . = ASSERT (((__pwr_mgmt_data_start__ == __pwr_mgmt_data_end__) || ((__pwr_mgmt_data_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .pwr_mgmt_data is too large to fit in FLASH1 memory segment)
-                0x00000000000025c4                __log_const_data_load_start__ = ALIGN (__pwr_mgmt_data_end__, 0x4)
+                0x00000000000025d4                __log_const_data_load_start__ = ALIGN (__pwr_mgmt_data_end__, 0x4)
 
 .log_const_data
-                0x00000000000025c4       0x50
-                0x00000000000025c4                __log_const_data_start__ = .
-                0x00000000000025c4                __start_log_const_data = __log_const_data_start__
+                0x00000000000025d4       0x50
+                0x00000000000025d4                __log_const_data_start__ = .
+                0x00000000000025d4                __start_log_const_data = __log_const_data_start__
  *(SORT_BY_NAME(.log_const_data*))
  .log_const_data_CLOCK
-                0x00000000000025c4        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_clock.o
-                0x00000000000025c4                m_nrf_log_CLOCK_logs_data_const
+                0x00000000000025d4        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_clock.o
+                0x00000000000025d4                m_nrf_log_CLOCK_logs_data_const
  .log_const_data_PPI
-                0x00000000000025cc        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_ppi.o
-                0x00000000000025cc                m_nrf_log_PPI_logs_data_const
+                0x00000000000025dc        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_ppi.o
+                0x00000000000025dc                m_nrf_log_PPI_logs_data_const
  .log_const_data_PRS
-                0x00000000000025d4        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_prs.o
-                0x00000000000025d4                m_nrf_log_PRS_logs_data_const
+                0x00000000000025e4        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_prs.o
+                0x00000000000025e4                m_nrf_log_PRS_logs_data_const
  .log_const_data_RTC
-                0x00000000000025dc        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_rtc.o
-                0x00000000000025dc                m_nrf_log_RTC_logs_data_const
+                0x00000000000025ec        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_rtc.o
+                0x00000000000025ec                m_nrf_log_RTC_logs_data_const
  .log_const_data_SAADC
-                0x00000000000025e4        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_saadc.o
-                0x00000000000025e4                m_nrf_log_SAADC_logs_data_const
+                0x00000000000025f4        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_saadc.o
+                0x00000000000025f4                m_nrf_log_SAADC_logs_data_const
  .log_const_data_UART
-                0x00000000000025ec        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uart.o
-                0x00000000000025ec                m_nrf_log_UART_logs_data_const
+                0x00000000000025fc        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uart.o
+                0x00000000000025fc                m_nrf_log_UART_logs_data_const
  .log_const_data_UARTE
-                0x00000000000025f4        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uarte.o
-                0x00000000000025f4                m_nrf_log_UARTE_logs_data_const
+                0x0000000000002604        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uarte.o
+                0x0000000000002604                m_nrf_log_UARTE_logs_data_const
  .log_const_data_app
-                0x00000000000025fc        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_frontend.o
-                0x00000000000025fc                m_nrf_log_app_logs_data_const
+                0x000000000000260c        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_frontend.o
+                0x000000000000260c                m_nrf_log_app_logs_data_const
  .log_const_data_clock
-                0x0000000000002604        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrf_drv_clock.o
-                0x0000000000002604                m_nrf_log_clock_logs_data_const
+                0x0000000000002614        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrf_drv_clock.o
+                0x0000000000002614                m_nrf_log_clock_logs_data_const
  .log_const_data_pwr_mgmt
-                0x000000000000260c        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrf_pwr_mgmt.o
-                0x000000000000260c                m_nrf_log_pwr_mgmt_logs_data_const
-                0x0000000000002614                __log_const_data_end__ = (__log_const_data_start__ + SIZEOF (.log_const_data))
+                0x000000000000261c        0x8 Output/Release/Obj/saadc_pca10100_Spiros/nrf_pwr_mgmt.o
+                0x000000000000261c                m_nrf_log_pwr_mgmt_logs_data_const
+                0x0000000000002624                __log_const_data_end__ = (__log_const_data_start__ + SIZEOF (.log_const_data))
                 0x0000000000000050                __log_const_data_size__ = SIZEOF (.log_const_data)
-                0x0000000000002614                __stop_log_const_data = __log_const_data_end__
-                0x0000000000002614                __log_const_data_load_end__ = __log_const_data_end__
+                0x0000000000002624                __stop_log_const_data = __log_const_data_end__
+                0x0000000000002624                __log_const_data_load_end__ = __log_const_data_end__
                 0x0000000000000001                . = ASSERT (((__log_const_data_start__ == __log_const_data_end__) || ((__log_const_data_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .log_const_data is too large to fit in FLASH1 memory segment)
-                0x0000000000002614                __log_backends_load_start__ = ALIGN (__log_const_data_end__, 0x4)
+                0x0000000000002624                __log_backends_load_start__ = ALIGN (__log_const_data_end__, 0x4)
 
-.log_backends   0x0000000000002614       0x10
-                0x0000000000002614                __log_backends_start__ = .
-                0x0000000000002614                __start_log_backends = __log_backends_start__
+.log_backends   0x0000000000002624       0x10
+                0x0000000000002624                __log_backends_start__ = .
+                0x0000000000002624                __start_log_backends = __log_backends_start__
  *(SORT_BY_NAME(.log_backends*))
- .log_backends  0x0000000000002614       0x10 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_default_backends.o
-                0x0000000000002624                __log_backends_end__ = (__log_backends_start__ + SIZEOF (.log_backends))
+ .log_backends  0x0000000000002624       0x10 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_default_backends.o
+                0x0000000000002634                __log_backends_end__ = (__log_backends_start__ + SIZEOF (.log_backends))
                 0x0000000000000010                __log_backends_size__ = SIZEOF (.log_backends)
-                0x0000000000002624                __stop_log_backends = __log_backends_end__
-                0x0000000000002624                __log_backends_load_end__ = __log_backends_end__
+                0x0000000000002634                __stop_log_backends = __log_backends_end__
+                0x0000000000002634                __log_backends_load_end__ = __log_backends_end__
                 0x0000000000000001                . = ASSERT (((__log_backends_start__ == __log_backends_end__) || ((__log_backends_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .log_backends is too large to fit in FLASH1 memory segment)
-                0x0000000000002624                __nrf_balloc_load_start__ = ALIGN (__log_backends_end__, 0x4)
+                0x0000000000002634                __nrf_balloc_load_start__ = ALIGN (__log_backends_end__, 0x4)
 
-.nrf_balloc     0x0000000000002624       0x14
-                0x0000000000002624                __nrf_balloc_start__ = .
-                0x0000000000002624                __start_nrf_balloc = __nrf_balloc_start__
+.nrf_balloc     0x0000000000002634       0x14
+                0x0000000000002634                __nrf_balloc_start__ = .
+                0x0000000000002634                __start_nrf_balloc = __nrf_balloc_start__
  *(.nrf_balloc*)
- .nrf_balloc    0x0000000000002624       0x14 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_frontend.o
-                0x0000000000002624                log_mempool
-                0x0000000000002638                __nrf_balloc_end__ = (__nrf_balloc_start__ + SIZEOF (.nrf_balloc))
+ .nrf_balloc    0x0000000000002634       0x14 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_frontend.o
+                0x0000000000002634                log_mempool
+                0x0000000000002648                __nrf_balloc_end__ = (__nrf_balloc_start__ + SIZEOF (.nrf_balloc))
                 0x0000000000000014                __nrf_balloc_size__ = SIZEOF (.nrf_balloc)
-                0x0000000000002638                __stop_nrf_balloc = __nrf_balloc_end__
-                0x0000000000002638                __nrf_balloc_load_end__ = __nrf_balloc_end__
+                0x0000000000002648                __stop_nrf_balloc = __nrf_balloc_end__
+                0x0000000000002648                __nrf_balloc_load_end__ = __nrf_balloc_end__
                 0x0000000000000001                . = ASSERT (((__nrf_balloc_start__ == __nrf_balloc_end__) || ((__nrf_balloc_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .nrf_balloc is too large to fit in FLASH1 memory segment)
-                0x0000000000002638                __nrf_sections_load_start__ = ALIGN (__nrf_balloc_end__, 0x4)
+                0x0000000000002648                __nrf_sections_load_start__ = ALIGN (__nrf_balloc_end__, 0x4)
 
-.nrf_sections   0x0000000000002638        0x0
-                0x0000000000002638                __nrf_sections_start__ = .
-                0x0000000000002638                __start_nrf_sections = __nrf_sections_start__
+.nrf_sections   0x0000000000002648        0x0
+                0x0000000000002648                __nrf_sections_start__ = .
+                0x0000000000002648                __start_nrf_sections = __nrf_sections_start__
  *(.nrf_sections .nrf_sections.*)
-                0x0000000000002638                __nrf_sections_end__ = (__nrf_sections_start__ + SIZEOF (.nrf_sections))
+                0x0000000000002648                __nrf_sections_end__ = (__nrf_sections_start__ + SIZEOF (.nrf_sections))
                 0x0000000000000000                __nrf_sections_size__ = SIZEOF (.nrf_sections)
-                0x0000000000002638                __nrf_sections_load_end__ = __nrf_sections_end__
+                0x0000000000002648                __nrf_sections_load_end__ = __nrf_sections_end__
                 0x0000000000000001                . = ASSERT (((__nrf_sections_start__ == __nrf_sections_end__) || ((__nrf_sections_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .nrf_sections is too large to fit in FLASH1 memory segment)
-                0x0000000000002638                __log_dynamic_data_load_start__ = ALIGN (__nrf_sections_end__, 0x4)
+                0x0000000000002648                __log_dynamic_data_load_start__ = ALIGN (__nrf_sections_end__, 0x4)
 
 .log_dynamic_data
-                0x0000000020000000        0x0 load address 0x0000000000002638
+                0x0000000020000000        0x0 load address 0x0000000000002648
                 0x0000000020000000                __log_dynamic_data_start__ = .
  *(SORT_BY_NAME(.log_dynamic_data*))
                 0x0000000020000000                __log_dynamic_data_end__ = (__log_dynamic_data_start__ + SIZEOF (.log_dynamic_data))
                 0x0000000000000000                __log_dynamic_data_size__ = SIZEOF (.log_dynamic_data)
-                0x0000000000002638                __log_dynamic_data_load_end__ = (__log_dynamic_data_load_start__ + SIZEOF (.log_dynamic_data))
+                0x0000000000002648                __log_dynamic_data_load_end__ = (__log_dynamic_data_load_start__ + SIZEOF (.log_dynamic_data))
                 0x0000000000000001                . = ASSERT (((__log_dynamic_data_load_start__ == __log_dynamic_data_load_end__) || ((__log_dynamic_data_load_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .log_dynamic_data is too large to fit in FLASH1 memory segment)
 
 .log_dynamic_data_run
@@ -6368,15 +6368,15 @@ Linker script and memory map
                 0x0000000020000000                __stop_log_dynamic_data = __log_dynamic_data_run_end__
                 0x0000000020000000                __log_dynamic_data_run_load_end__ = __log_dynamic_data_run_end__
                 0x0000000000000001                . = ASSERT (((__log_dynamic_data_run_start__ == __log_dynamic_data_run_end__) || ((__log_dynamic_data_run_end__ - __RAM1_segment_start__) <= __RAM1_segment_size__)), error: .log_dynamic_data_run is too large to fit in RAM1 memory segment)
-                0x0000000000002638                __log_filter_data_load_start__ = ALIGN ((__log_dynamic_data_load_start__ + SIZEOF (.log_dynamic_data)), 0x4)
+                0x0000000000002648                __log_filter_data_load_start__ = ALIGN ((__log_dynamic_data_load_start__ + SIZEOF (.log_dynamic_data)), 0x4)
 
 .log_filter_data
-                0x0000000020000000        0x0 load address 0x0000000000002638
+                0x0000000020000000        0x0 load address 0x0000000000002648
                 0x0000000020000000                __log_filter_data_start__ = .
  *(SORT_BY_NAME(.log_filter_data*))
                 0x0000000020000000                __log_filter_data_end__ = (__log_filter_data_start__ + SIZEOF (.log_filter_data))
                 0x0000000000000000                __log_filter_data_size__ = SIZEOF (.log_filter_data)
-                0x0000000000002638                __log_filter_data_load_end__ = (__log_filter_data_load_start__ + SIZEOF (.log_filter_data))
+                0x0000000000002648                __log_filter_data_load_end__ = (__log_filter_data_load_start__ + SIZEOF (.log_filter_data))
                 0x0000000000000001                . = ASSERT (((__log_filter_data_load_start__ == __log_filter_data_load_end__) || ((__log_filter_data_load_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .log_filter_data is too large to fit in FLASH1 memory segment)
 
 .log_filter_data_run
@@ -6399,200 +6399,200 @@ Linker script and memory map
                 0x0000000000000000                __nrf_sections_run_end_size__ = SIZEOF (.nrf_sections_run_end)
                 0x0000000020000000                __nrf_sections_run_end_load_end__ = __nrf_sections_run_end_end__
                 0x0000000000000001                . = ASSERT (((__nrf_sections_run_end_start__ == __nrf_sections_run_end_end__) || ((__nrf_sections_run_end_end__ - __RAM1_segment_start__) <= __RAM1_segment_size__)), error: .nrf_sections_run_end is too large to fit in RAM1 memory segment)
-                0x0000000000002638                __dtors_load_start__ = ALIGN ((__log_filter_data_load_start__ + SIZEOF (.log_filter_data)), 0x4)
+                0x0000000000002648                __dtors_load_start__ = ALIGN ((__log_filter_data_load_start__ + SIZEOF (.log_filter_data)), 0x4)
 
-.dtors          0x0000000000002638        0x0
-                0x0000000000002638                __dtors_start__ = .
+.dtors          0x0000000000002648        0x0
+                0x0000000000002648                __dtors_start__ = .
  *(SORT_BY_NAME(.dtors.*))
  *(.dtors)
  *(.fini_array)
  *(SORT_BY_NAME(.fini_array.*))
-                0x0000000000002638                __dtors_end__ = (__dtors_start__ + SIZEOF (.dtors))
+                0x0000000000002648                __dtors_end__ = (__dtors_start__ + SIZEOF (.dtors))
                 0x0000000000000000                __dtors_size__ = SIZEOF (.dtors)
-                0x0000000000002638                __dtors_load_end__ = __dtors_end__
+                0x0000000000002648                __dtors_load_end__ = __dtors_end__
                 0x0000000000000001                . = ASSERT (((__dtors_start__ == __dtors_end__) || ((__dtors_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .dtors is too large to fit in FLASH1 memory segment)
-                0x0000000000002638                __ctors_load_start__ = ALIGN (__dtors_end__, 0x4)
+                0x0000000000002648                __ctors_load_start__ = ALIGN (__dtors_end__, 0x4)
 
-.ctors          0x0000000000002638        0x0
-                0x0000000000002638                __ctors_start__ = .
+.ctors          0x0000000000002648        0x0
+                0x0000000000002648                __ctors_start__ = .
  *(SORT_BY_NAME(.ctors.*))
  *(.ctors)
  *(.init_array)
  *(SORT_BY_NAME(.init_array.*))
-                0x0000000000002638                __ctors_end__ = (__ctors_start__ + SIZEOF (.ctors))
+                0x0000000000002648                __ctors_end__ = (__ctors_start__ + SIZEOF (.ctors))
                 0x0000000000000000                __ctors_size__ = SIZEOF (.ctors)
-                0x0000000000002638                __ctors_load_end__ = __ctors_end__
+                0x0000000000002648                __ctors_load_end__ = __ctors_end__
                 0x0000000000000001                . = ASSERT (((__ctors_start__ == __ctors_end__) || ((__ctors_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .ctors is too large to fit in FLASH1 memory segment)
-                0x0000000000002638                __rodata_load_start__ = ALIGN (__ctors_end__, 0x4)
+                0x0000000000002648                __rodata_load_start__ = ALIGN (__ctors_end__, 0x4)
 
-.rodata         0x0000000000002638      0x698
-                0x0000000000002638                __rodata_start__ = .
+.rodata         0x0000000000002648      0x698
+                0x0000000000002648                __rodata_start__ = .
  *(.rodata .rodata.* .gnu.linkonce.r.*)
- *fill*         0x0000000000002638        0x8 
+ *fill*         0x0000000000002648        0x8 
  .rodata.delay_machine_code.0
-                0x0000000000002640        0x6 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_rtt.o
- *fill*         0x0000000000002646        0x2 
+                0x0000000000002650        0x6 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_rtt.o
+ *fill*         0x0000000000002656        0x2 
  .rodata.nrf_log_backend_rtt_api
-                0x0000000000002648        0xc Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_rtt.o
-                0x0000000000002648                nrf_log_backend_rtt_api
+                0x0000000000002658        0xc Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_rtt.o
+                0x0000000000002658                nrf_log_backend_rtt_api
  .rodata.str1.1
-                0x0000000000002654       0x10 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_default_backends.o
+                0x0000000000002664       0x10 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_default_backends.o
  .rodata.nrf_log_frontend_dequeue.str1.1
-                0x0000000000002664       0x11 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_frontend.o
+                0x0000000000002674       0x11 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_frontend.o
  .rodata.str1.1
-                0x0000000000002675        0x4 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_frontend.o
- *fill*         0x0000000000002679        0x3 
+                0x0000000000002685        0x4 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_frontend.o
+ *fill*         0x0000000000002689        0x3 
  .rodata.m_log_push_ringbuf
-                0x000000000000267c        0xc Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_frontend.o
+                0x000000000000268c        0xc Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_frontend.o
  .rodata.prefix_process.str1.1
-                0x0000000000002688       0x32 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_str_formatter.o
+                0x0000000000002698       0x32 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_str_formatter.o
  .rodata.postfix_process.str1.1
-                0x00000000000026ba       0x32 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_str_formatter.o
+                0x00000000000026ca       0x32 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_str_formatter.o
                                           0x3 (size before relaxing)
  .rodata.nrf_log_hexdump_entry_process.str1.1
-                0x00000000000026ba        0xf Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_str_formatter.o
+                0x00000000000026ca        0xf Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_str_formatter.o
                                          0x11 (size before relaxing)
  .rodata.str1.1
-                0x00000000000026c9       0x4b Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_str_formatter.o
+                0x00000000000026d9       0x4b Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_str_formatter.o
                                          0x51 (size before relaxing)
  .rodata.m_colors
-                0x0000000000002714       0x24 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_str_formatter.o
+                0x0000000000002724       0x24 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_str_formatter.o
  .rodata.severity_names
-                0x0000000000002738       0x14 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_str_formatter.o
+                0x0000000000002748       0x14 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_str_formatter.o
  .rodata.app_error_fault_handler.str1.1
-                0x000000000000274c       0x19 Output/Release/Obj/saadc_pca10100_Spiros/app_error_weak.o
+                0x000000000000275c       0x19 Output/Release/Obj/saadc_pca10100_Spiros/app_error_weak.o
  .rodata._aV2C.0
-                0x0000000000002765       0x10 Output/Release/Obj/saadc_pca10100_Spiros/nrf_fprintf_format.o
+                0x0000000000002775       0x10 Output/Release/Obj/saadc_pca10100_Spiros/nrf_fprintf_format.o
  .rodata.str1.1
-                0x0000000000002775        0x9 Output/Release/Obj/saadc_pca10100_Spiros/nrf_pwr_mgmt.o
- *fill*         0x000000000000277e        0x2 
+                0x0000000000002785        0x9 Output/Release/Obj/saadc_pca10100_Spiros/nrf_pwr_mgmt.o
+ *fill*         0x000000000000278e        0x2 
  .rodata.pwr_mgmt_data
-                0x0000000000002780        0xc Output/Release/Obj/saadc_pca10100_Spiros/nrf_pwr_mgmt.o
+                0x0000000000002790        0xc Output/Release/Obj/saadc_pca10100_Spiros/nrf_pwr_mgmt.o
  .rodata.str1.1
-                0x000000000000278c        0x6 Output/Release/Obj/saadc_pca10100_Spiros/nrf_drv_clock.o
+                0x000000000000279c        0x6 Output/Release/Obj/saadc_pca10100_Spiros/nrf_drv_clock.o
  .rodata.str1.1
-                0x0000000000002792        0x6 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_clock.o
+                0x00000000000027a2        0x6 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_clock.o
  .rodata.str1.1
-                0x0000000000002798        0x4 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_ppi.o
+                0x00000000000027a8        0x4 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_ppi.o
  .rodata.str1.1
-                0x000000000000279c        0x4 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_prs.o
+                0x00000000000027ac        0x4 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_prs.o
  .rodata.str1.1
-                0x00000000000027a0        0x6 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_saadc.o
+                0x00000000000027b0        0x6 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_saadc.o
  .rodata.str1.1
-                0x00000000000027a6        0x5 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uart.o
+                0x00000000000027b6        0x5 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uart.o
  .rodata.str1.1
-                0x00000000000027ab        0x6 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uarte.o
+                0x00000000000027bb        0x6 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uarte.o
  .rodata.str1.1
-                0x00000000000027b1        0x4 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_rtc.o
+                0x00000000000027c1        0x4 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_rtc.o
  .rodata.main.str1.1
-                0x00000000000027b5      0x172 Output/Release/Obj/saadc_pca10100_Spiros/main.o
- *fill*         0x0000000000002927        0x9 
+                0x00000000000027c5      0x172 Output/Release/Obj/saadc_pca10100_Spiros/main.o
+ *fill*         0x0000000000002937        0x9 
  .rodata.delay_machine_code.0
-                0x0000000000002930        0x6 Output/Release/Obj/saadc_pca10100_Spiros/main.o
- *fill*         0x0000000000002936        0x2 
- .rodata.rtc    0x0000000000002938        0x8 Output/Release/Obj/saadc_pca10100_Spiros/main.o
+                0x0000000000002940        0x6 Output/Release/Obj/saadc_pca10100_Spiros/main.o
+ *fill*         0x0000000000002946        0x2 
+ .rodata.rtc    0x0000000000002948        0x8 Output/Release/Obj/saadc_pca10100_Spiros/main.o
  .rodata.saadc_callback.str1.1
-                0x0000000000002940       0x30 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
+                0x0000000000002950       0x30 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
  .rodata.rain_sensor_init.str1.1
-                0x0000000000002970       0x97 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
+                0x0000000000002980       0x97 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
                                          0x99 (size before relaxing)
  .rodata.rain_sensor_update.str1.1
-                0x0000000000002a07       0x58 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
+                0x0000000000002a17       0x58 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
                                          0x81 (size before relaxing)
- .rodata        0x0000000000002a5f        0x4 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
- *fill*         0x0000000000002a63        0xd 
+ .rodata        0x0000000000002a6f        0x4 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
+ *fill*         0x0000000000002a73        0xd 
  .rodata.delay_machine_code.0
-                0x0000000000002a70        0x6 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
+                0x0000000000002a80        0x6 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
  .rodata._DoInit.str1.1
-                0x0000000000002a76       0x14 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
+                0x0000000000002a86       0x14 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
  .rodata.CSWTCH.7
-                0x0000000000002a8a        0x3 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
- *fill*         0x0000000000002a8d        0x3 
+                0x0000000000002a9a        0x3 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
+ *fill*         0x0000000000002a9d        0x3 
  .rodata.libc.__RAL_find_locale.str1.4
-                0x0000000000002a90        0xa C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
- *fill*         0x0000000000002a9a        0x2 
+                0x0000000000002aa0        0xa C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+ *fill*         0x0000000000002aaa        0x2 
  .rodata.libc.__RAL_ascii_ctype_map
-                0x0000000000002a9c       0x80 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002a9c                __RAL_ascii_ctype_map
+                0x0000000000002aac       0x80 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002aac                __RAL_ascii_ctype_map
  .rodata.libc.__RAL_ascii_ctype_mask
-                0x0000000000002b1c        0xd C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
- *fill*         0x0000000000002b29        0x3 
+                0x0000000000002b2c        0xd C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+ *fill*         0x0000000000002b39        0x3 
  .rodata.libc.__RAL_c_locale
-                0x0000000000002b2c        0xc C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002b2c                __RAL_c_locale
+                0x0000000000002b3c        0xc C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002b3c                __RAL_c_locale
  .rodata.libc.__RAL_c_locale_abbrev_day_names
-                0x0000000000002b38       0x1d C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002b38                __RAL_c_locale_abbrev_day_names
- *fill*         0x0000000000002b55        0x3 
+                0x0000000000002b48       0x1d C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002b48                __RAL_c_locale_abbrev_day_names
+ *fill*         0x0000000000002b65        0x3 
  .rodata.libc.__RAL_c_locale_abbrev_month_names
-                0x0000000000002b58       0x31 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002b58                __RAL_c_locale_abbrev_month_names
- *fill*         0x0000000000002b89        0x3 
+                0x0000000000002b68       0x31 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002b68                __RAL_c_locale_abbrev_month_names
+ *fill*         0x0000000000002b99        0x3 
  .rodata.libc.__RAL_c_locale_am_pm_indicator
-                0x0000000000002b8c        0x7 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002b8c                __RAL_c_locale_am_pm_indicator
- *fill*         0x0000000000002b93        0x1 
+                0x0000000000002b9c        0x7 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002b9c                __RAL_c_locale_am_pm_indicator
+ *fill*         0x0000000000002ba3        0x1 
  .rodata.libc.__RAL_c_locale_data
-                0x0000000000002b94       0x58 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002b94                __RAL_c_locale_data
+                0x0000000000002ba4       0x58 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002ba4                __RAL_c_locale_data
  .rodata.libc.__RAL_c_locale_date_format
-                0x0000000000002bec        0x9 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002bec                __RAL_c_locale_date_format
- *fill*         0x0000000000002bf5        0x3 
+                0x0000000000002bfc        0x9 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002bfc                __RAL_c_locale_date_format
+ *fill*         0x0000000000002c05        0x3 
  .rodata.libc.__RAL_c_locale_date_time_format
-                0x0000000000002bf8        0xf C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002bf8                __RAL_c_locale_date_time_format
- *fill*         0x0000000000002c07        0x1 
+                0x0000000000002c08        0xf C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002c08                __RAL_c_locale_date_time_format
+ *fill*         0x0000000000002c17        0x1 
  .rodata.libc.__RAL_c_locale_day_names
-                0x0000000000002c08       0x3a C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002c08                __RAL_c_locale_day_names
- *fill*         0x0000000000002c42        0x2 
+                0x0000000000002c18       0x3a C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002c18                __RAL_c_locale_day_names
+ *fill*         0x0000000000002c52        0x2 
  .rodata.libc.__RAL_c_locale_month_names
-                0x0000000000002c44       0x57 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002c44                __RAL_c_locale_month_names
- *fill*         0x0000000000002c9b        0x1 
+                0x0000000000002c54       0x57 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002c54                __RAL_c_locale_month_names
+ *fill*         0x0000000000002cab        0x1 
  .rodata.libc.__RAL_c_locale_time_format
-                0x0000000000002c9c        0x9 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002c9c                __RAL_c_locale_time_format
- *fill*         0x0000000000002ca5        0x3 
+                0x0000000000002cac        0x9 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002cac                __RAL_c_locale_time_format
+ *fill*         0x0000000000002cb5        0x3 
  .rodata.libc.__RAL_codeset_ascii
-                0x0000000000002ca8       0x20 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002ca8                __RAL_codeset_ascii
+                0x0000000000002cb8       0x20 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002cb8                __RAL_codeset_ascii
  .rodata.libc.__RAL_data_empty_string
-                0x0000000000002cc8        0x1 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002cc8                __RAL_data_empty_string
- *fill*         0x0000000000002cc9        0x3 
+                0x0000000000002cd8        0x1 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002cd8                __RAL_data_empty_string
+ *fill*         0x0000000000002cd9        0x3 
  .rodata.libc.__RAL_data_utf8_period
-                0x0000000000002ccc        0x2 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
-                0x0000000000002ccc                __RAL_data_utf8_period
-                0x0000000000002cd0                . = ALIGN (MAX ((__rodata_start__ + 0x4), .), 0x4)
- *fill*         0x0000000000002cce        0x2 
-                0x0000000000002cd0                __rodata_end__ = (__rodata_start__ + SIZEOF (.rodata))
+                0x0000000000002cdc        0x2 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
+                0x0000000000002cdc                __RAL_data_utf8_period
+                0x0000000000002ce0                . = ALIGN (MAX ((__rodata_start__ + 0x4), .), 0x4)
+ *fill*         0x0000000000002cde        0x2 
+                0x0000000000002ce0                __rodata_end__ = (__rodata_start__ + SIZEOF (.rodata))
                 0x0000000000000698                __rodata_size__ = SIZEOF (.rodata)
-                0x0000000000002cd0                __rodata_load_end__ = __rodata_end__
+                0x0000000000002ce0                __rodata_load_end__ = __rodata_end__
 
-.rel.dyn        0x0000000000002cd0        0x0
- .rel.iplt      0x0000000000002cd0        0x0 Output/Release/Obj/saadc_pca10100_Spiros/thumb_crt0.o
+.rel.dyn        0x0000000000002ce0        0x0
+ .rel.iplt      0x0000000000002ce0        0x0 Output/Release/Obj/saadc_pca10100_Spiros/thumb_crt0.o
                 0x0000000000000001                . = ASSERT (((__rodata_start__ == __rodata_end__) || ((__rodata_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .rodata is too large to fit in FLASH1 memory segment)
-                0x0000000000002cd0                __ARM.exidx_load_start__ = ALIGN (__rodata_end__, 0x4)
+                0x0000000000002ce0                __ARM.exidx_load_start__ = ALIGN (__rodata_end__, 0x4)
 
-.ARM.exidx      0x0000000000002cd0        0x0
-                0x0000000000002cd0                __ARM.exidx_start__ = .
-                0x0000000000002cd0                __exidx_start = __ARM.exidx_start__
+.ARM.exidx      0x0000000000002ce0        0x0
+                0x0000000000002ce0                __ARM.exidx_start__ = .
+                0x0000000000002ce0                __exidx_start = __ARM.exidx_start__
  *(.ARM.exidx .ARM.exidx.*)
-                0x0000000000002cd0                __ARM.exidx_end__ = (__ARM.exidx_start__ + SIZEOF (.ARM.exidx))
+                0x0000000000002ce0                __ARM.exidx_end__ = (__ARM.exidx_start__ + SIZEOF (.ARM.exidx))
                 0x0000000000000000                __ARM.exidx_size__ = SIZEOF (.ARM.exidx)
-                0x0000000000002cd0                __exidx_end = __ARM.exidx_end__
-                0x0000000000002cd0                __ARM.exidx_load_end__ = __ARM.exidx_end__
+                0x0000000000002ce0                __exidx_end = __ARM.exidx_end__
+                0x0000000000002ce0                __ARM.exidx_load_end__ = __ARM.exidx_end__
                 0x0000000000000001                . = ASSERT (((__ARM.exidx_start__ == __ARM.exidx_end__) || ((__ARM.exidx_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .ARM.exidx is too large to fit in FLASH1 memory segment)
-                0x0000000000002cd0                __fast_load_start__ = ALIGN (__ARM.exidx_end__, 0x4)
+                0x0000000000002ce0                __fast_load_start__ = ALIGN (__ARM.exidx_end__, 0x4)
 
-.fast           0x0000000020000000        0x0 load address 0x0000000000002cd0
+.fast           0x0000000020000000        0x0 load address 0x0000000000002ce0
                 0x0000000020000000                __fast_start__ = .
  *(.fast .fast.*)
                 0x0000000020000000                __fast_end__ = (__fast_start__ + SIZEOF (.fast))
                 0x0000000000000000                __fast_size__ = SIZEOF (.fast)
-                0x0000000000002cd0                __fast_load_end__ = (__fast_load_start__ + SIZEOF (.fast))
+                0x0000000000002ce0                __fast_load_end__ = (__fast_load_start__ + SIZEOF (.fast))
                 0x0000000000000001                . = ASSERT (((__fast_load_start__ == __fast_load_end__) || ((__fast_load_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .fast is too large to fit in FLASH1 memory segment)
 
 .fast_run       0x0000000020000000        0x0
@@ -6601,9 +6601,9 @@ Linker script and memory map
                 0x0000000000000000                __fast_run_size__ = (__fast_run_end__ - __fast_run_start__)
                 0x0000000020000000                __fast_run_load_end__ = __fast_run_end__
                 0x0000000000000001                . = ASSERT (((__fast_run_start__ == __fast_run_end__) || ((__fast_run_end__ - __RAM1_segment_start__) <= __RAM1_segment_size__)), error: .fast_run is too large to fit in RAM1 memory segment)
-                0x0000000000002cd0                __data_load_start__ = ALIGN ((__fast_load_start__ + SIZEOF (.fast)), 0x4)
+                0x0000000000002ce0                __data_load_start__ = ALIGN ((__fast_load_start__ + SIZEOF (.fast)), 0x4)
 
-.data           0x0000000020000000       0x24 load address 0x0000000000002cd0
+.data           0x0000000020000000       0x24 load address 0x0000000000002ce0
                 0x0000000020000000                __data_start__ = .
  *(.data .data.* .gnu.linkonce.d.*)
  .data.log_backend_cb_rtt_log_backend
@@ -6619,7 +6619,7 @@ Linker script and memory map
                 0x0000000020000010                __RAL_global_locale
                 0x0000000020000024                __data_end__ = (__data_start__ + SIZEOF (.data))
                 0x0000000000000024                __data_size__ = SIZEOF (.data)
-                0x0000000000002cf4                __data_load_end__ = (__data_load_start__ + SIZEOF (.data))
+                0x0000000000002d04                __data_load_end__ = (__data_load_start__ + SIZEOF (.data))
 
 .igot.plt       0x0000000100000000        0x0
  .igot.plt      0x0000000100000000        0x0 Output/Release/Obj/saadc_pca10100_Spiros/thumb_crt0.o
@@ -6631,16 +6631,16 @@ Linker script and memory map
                 0x0000000000000024                __data_run_size__ = (__data_run_end__ - __data_run_start__)
                 0x0000000020000024                __data_run_load_end__ = __data_run_end__
                 0x0000000000000001                . = ASSERT (((__data_run_start__ == __data_run_end__) || ((__data_run_end__ - __RAM1_segment_start__) <= __RAM1_segment_size__)), error: .data_run is too large to fit in RAM1 memory segment)
-                0x0000000000002cf4                __tdata_load_start__ = ALIGN ((__data_load_start__ + SIZEOF (.data)), 0x4)
+                0x0000000000002d04                __tdata_load_start__ = ALIGN ((__data_load_start__ + SIZEOF (.data)), 0x4)
 
-.tdata          0x0000000020000024        0x0 load address 0x0000000000002cf4
+.tdata          0x0000000020000024        0x0 load address 0x0000000000002d04
                 0x0000000020000024                __tdata_start__ = .
  *(.tdata .tdata.*)
                 0x0000000020000024                __tdata_end__ = (__tdata_start__ + SIZEOF (.tdata))
                 0x0000000000000000                __tdata_size__ = SIZEOF (.tdata)
-                0x0000000000002cf4                __tdata_load_end__ = (__tdata_load_start__ + SIZEOF (.tdata))
-                0x0000000000002cf4                __FLASH1_segment_used_end__ = (ALIGN ((__data_load_start__ + SIZEOF (.data)), 0x4) + SIZEOF (.tdata))
-                0x0000000000002cf4                __FLASH1_segment_used_size__ = (__FLASH1_segment_used_end__ - __FLASH1_segment_start__)
+                0x0000000000002d04                __tdata_load_end__ = (__tdata_load_start__ + SIZEOF (.tdata))
+                0x0000000000002d04                __FLASH1_segment_used_end__ = (ALIGN ((__data_load_start__ + SIZEOF (.data)), 0x4) + SIZEOF (.tdata))
+                0x0000000000002d04                __FLASH1_segment_used_size__ = (__FLASH1_segment_used_end__ - __FLASH1_segment_start__)
                 0x0000000000000001                . = ASSERT (((__tdata_load_start__ == __tdata_load_end__) || ((__tdata_load_end__ - __FLASH1_segment_start__) <= __FLASH1_segment_size__)), error: .tdata is too large to fit in FLASH1 memory segment)
 
 .tdata_run      0x0000000020000024        0x0
@@ -6924,7 +6924,7 @@ LOAD linker stubs
  .comment       0x0000000000000025       0x26 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
  .comment       0x0000000000000025       0x26 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.42a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
 
-.debug_line     0x0000000000000000    0x13104
+.debug_line     0x0000000000000000    0x13117
  .debug_line    0x0000000000000000      0x21f Output/Release/Obj/saadc_pca10100_Spiros/thumb_crt0.o
  .debug_line    0x000000000000021f      0x8dc Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_rtt.o
  .debug_line    0x0000000000000afb      0x6b6 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_serial.o
@@ -6951,13 +6951,13 @@ LOAD linker stubs
  .debug_line    0x000000000000d56d     0x174a Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uarte.o
  .debug_line    0x000000000000ecb7      0xeb9 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_rtc.o
  .debug_line    0x000000000000fb70      0xce9 Output/Release/Obj/saadc_pca10100_Spiros/main.o
- .debug_line    0x0000000000010859      0xf66 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
- .debug_line    0x00000000000117bf     0x1259 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
- .debug_line    0x0000000000012a18       0x81 Output/Release/Obj/saadc_pca10100_Spiros/ses_startup_nrf52833.o
- .debug_line    0x0000000000012a99       0xa0 Output/Release/Obj/saadc_pca10100_Spiros/ses_startup_nrf_common.o
- .debug_line    0x0000000000012b39      0x5cb Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
+ .debug_line    0x0000000000010859      0xf79 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
+ .debug_line    0x00000000000117d2     0x1259 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
+ .debug_line    0x0000000000012a2b       0x81 Output/Release/Obj/saadc_pca10100_Spiros/ses_startup_nrf52833.o
+ .debug_line    0x0000000000012aac       0xa0 Output/Release/Obj/saadc_pca10100_Spiros/ses_startup_nrf_common.o
+ .debug_line    0x0000000000012b4c      0x5cb Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
 
-.debug_info     0x0000000000000000    0x1b4f2
+.debug_info     0x0000000000000000    0x1b505
  .debug_info    0x0000000000000000       0x22 Output/Release/Obj/saadc_pca10100_Spiros/thumb_crt0.o
  .debug_info    0x0000000000000022      0x54b Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_rtt.o
  .debug_info    0x000000000000056d      0x77b Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_serial.o
@@ -6984,11 +6984,11 @@ LOAD linker stubs
  .debug_info    0x00000000000114a4     0x3324 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uarte.o
  .debug_info    0x00000000000147c8     0x19f1 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_rtc.o
  .debug_info    0x00000000000161b9     0x11b2 Output/Release/Obj/saadc_pca10100_Spiros/main.o
- .debug_info    0x000000000001736b     0x1780 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
- .debug_info    0x0000000000018aeb     0x15fe Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
- .debug_info    0x000000000001a0e9       0x23 Output/Release/Obj/saadc_pca10100_Spiros/ses_startup_nrf52833.o
- .debug_info    0x000000000001a10c       0x23 Output/Release/Obj/saadc_pca10100_Spiros/ses_startup_nrf_common.o
- .debug_info    0x000000000001a12f     0x13c3 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
+ .debug_info    0x000000000001736b     0x1793 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
+ .debug_info    0x0000000000018afe     0x15fe Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
+ .debug_info    0x000000000001a0fc       0x23 Output/Release/Obj/saadc_pca10100_Spiros/ses_startup_nrf52833.o
+ .debug_info    0x000000000001a11f       0x23 Output/Release/Obj/saadc_pca10100_Spiros/ses_startup_nrf_common.o
+ .debug_info    0x000000000001a142     0x13c3 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
 
 .debug_abbrev   0x0000000000000000     0x5484
  .debug_abbrev  0x0000000000000000       0x12 Output/Release/Obj/saadc_pca10100_Spiros/thumb_crt0.o
@@ -7150,7 +7150,7 @@ LOAD linker stubs
  .debug_str     0x000000000009793e     0x814d Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
                                       0x8151b (size before relaxing)
 
-.debug_ranges   0x0000000000000000     0x21a0
+.debug_ranges   0x0000000000000000     0x21c0
  .debug_ranges  0x0000000000000000       0x90 Output/Release/Obj/saadc_pca10100_Spiros/thumb_crt0.o
  .debug_ranges  0x0000000000000090       0x70 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_rtt.o
  .debug_ranges  0x0000000000000100       0x28 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_serial.o
@@ -7177,9 +7177,9 @@ LOAD linker stubs
  .debug_ranges  0x0000000000001708      0x3f0 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uarte.o
  .debug_ranges  0x0000000000001af8      0x1b8 Output/Release/Obj/saadc_pca10100_Spiros/nrfx_rtc.o
  .debug_ranges  0x0000000000001cb0      0x110 Output/Release/Obj/saadc_pca10100_Spiros/main.o
- .debug_ranges  0x0000000000001dc0      0x298 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
- .debug_ranges  0x0000000000002058       0xf8 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
- .debug_ranges  0x0000000000002150       0x50 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
+ .debug_ranges  0x0000000000001dc0      0x2b8 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
+ .debug_ranges  0x0000000000002078       0xf8 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
+ .debug_ranges  0x0000000000002170       0x50 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
 
 .debug_frame    0x0000000000000000     0x1dc4
  .debug_frame   0x0000000000000000       0x88 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_rtt.o
@@ -7211,7 +7211,7 @@ LOAD linker stubs
  .debug_frame   0x000000000000192c      0x42c Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
  .debug_frame   0x0000000000001d58       0x6c Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
 
-.debug_loc      0x0000000000000000     0xbd0a
+.debug_loc      0x0000000000000000     0xbd35
  .debug_loc     0x0000000000000000      0x1af Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_rtt.o
  .debug_loc     0x00000000000001af      0x186 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_backend_serial.o
  .debug_loc     0x0000000000000335       0x31 Output/Release/Obj/saadc_pca10100_Spiros/nrf_log_default_backends.o
@@ -7236,9 +7236,9 @@ LOAD linker stubs
  .debug_loc     0x0000000000007741     0x177d Output/Release/Obj/saadc_pca10100_Spiros/nrfx_uarte.o
  .debug_loc     0x0000000000008ebe      0xcfd Output/Release/Obj/saadc_pca10100_Spiros/nrfx_rtc.o
  .debug_loc     0x0000000000009bbb      0x286 Output/Release/Obj/saadc_pca10100_Spiros/main.o
- .debug_loc     0x0000000000009e41      0x703 Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
- .debug_loc     0x000000000000a544     0x1736 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
- .debug_loc     0x000000000000bc7a       0x90 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
+ .debug_loc     0x0000000000009e41      0x72e Output/Release/Obj/saadc_pca10100_Spiros/rain_sensor.o
+ .debug_loc     0x000000000000a56f     0x1736 Output/Release/Obj/saadc_pca10100_Spiros/SEGGER_RTT.o
+ .debug_loc     0x000000000000bca5       0x90 Output/Release/Obj/saadc_pca10100_Spiros/system_nrf52833.o
 
 .debug_pubnames
                 0x0000000000000000     0x7dc1
